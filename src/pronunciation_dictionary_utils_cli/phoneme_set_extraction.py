@@ -5,8 +5,8 @@ from tempfile import gettempdir
 from typing import cast
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import DeserializationOptions, MultiprocessingOptions, get_phoneme_set
 
-from pronunciation_dictionary_utils import DeserializationOptions, MultiprocessingOptions, get_phoneme_set
 from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
                                                                 add_deserialization_group,
                                                                 add_encoding_argument, add_mp_group,

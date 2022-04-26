@@ -16,7 +16,7 @@ twine = "*"
 cx-freeze = "*"
 
 [packages]
-pronunciation-dictionary = ">=0.0.3"
+pronunciation-dictionary = ">=0.0.4"
 ordered-set = ">=4.1.0"
 tqdm = "*"
 

@@ -2,9 +2,8 @@ from logging import getLogger
 from pathlib import Path
 from typing import Optional
 
-from pronunciation_dictionary_utils import (DeserializationOptions, MultiprocessingOptions,
-                                            PronunciationDict, SerializationOptions, load_dict,
-                                            save_dict)
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
+                                      PronunciationDict, SerializationOptions, load_dict, save_dict)
 
 
 def try_save_dict(pronunciation_dict: PronunciationDict, path: Path, encoding: str, options: SerializationOptions) -> bool:

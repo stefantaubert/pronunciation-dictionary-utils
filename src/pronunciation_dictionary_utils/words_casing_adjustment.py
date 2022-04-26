@@ -4,11 +4,10 @@ from multiprocessing.pool import Pool
 from typing import Literal, Optional, Tuple
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Word
 from tqdm import tqdm
 
 from pronunciation_dictionary_utils.common import merge_pronunciations
-from pronunciation_dictionary_utils.mp_options import MultiprocessingOptions
-from pronunciation_dictionary_utils.types import PronunciationDict, Word
 from pronunciation_dictionary_utils.validation import validate_dictionary, validate_ratio
 
 

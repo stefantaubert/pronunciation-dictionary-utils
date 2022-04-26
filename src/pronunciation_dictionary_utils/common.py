@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
-from pronunciation_dictionary_utils.types import PronunciationDict, Pronunciations
+from pronunciation_dictionary import PronunciationDict, Pronunciations
+
 from pronunciation_dictionary_utils.validation import validate_pronunciations, validate_ratio
 
 

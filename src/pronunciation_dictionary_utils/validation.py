@@ -2,8 +2,7 @@
 from collections import OrderedDict
 from typing import Any, Optional
 
-from pronunciation_dictionary_utils.mp_options import MultiprocessingOptions
-from pronunciation_dictionary_utils.types import PronunciationDict, Pronunciations
+from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations
 
 
 class ValidationError():

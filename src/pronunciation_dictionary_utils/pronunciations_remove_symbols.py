@@ -1,13 +1,13 @@
 from collections import OrderedDict
 from functools import partial
 from multiprocessing.pool import Pool
-from typing import Any, Optional, Set, Tuple, Type
+from typing import Optional, Set, Tuple
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
+                                      Symbol, Word)
 from tqdm import tqdm
 
-from pronunciation_dictionary_utils.mp_options import MultiprocessingOptions
-from pronunciation_dictionary_utils.types import PronunciationDict, Pronunciations, Symbol, Word
 from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
                                                        validate_type)
 

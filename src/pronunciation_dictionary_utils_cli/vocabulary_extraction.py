@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import cast
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import DeserializationOptions, MultiprocessingOptions
 
-from pronunciation_dictionary_utils import DeserializationOptions, MultiprocessingOptions, get_vocabulary
 from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
                                                                 add_deserialization_group,
                                                                 add_encoding_argument, add_mp_group,
@@ -44,7 +44,7 @@ def get_vocabulary_ns(ns: Namespace) -> bool:
       logger.error(f"Dictionary '{dictionary_path}' couldn't be read.")
       return False
 
-    vocabulary = get_vocabulary(dictionary_instance)
+    vocabulary = dictionary_instance.keys()
     total_vocabulary.update(vocabulary)
 
   sort = not ns.unsorted

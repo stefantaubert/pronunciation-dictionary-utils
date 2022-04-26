@@ -1,9 +1,9 @@
 from typing import Optional
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import PronunciationDict
 
 from pronunciation_dictionary_utils.common import merge_pronunciations
-from pronunciation_dictionary_utils.types import PronunciationDict
 from pronunciation_dictionary_utils.validation import validate_dictionary, validate_ratio
 
 

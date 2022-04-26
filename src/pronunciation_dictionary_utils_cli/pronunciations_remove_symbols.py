@@ -3,12 +3,15 @@ from logging import getLogger
 from pathlib import Path
 from tempfile import gettempdir
 
-from pronunciation_dictionary_utils import (DeserializationOptions, MultiprocessingOptions,
-                                            SerializationOptions, remove_symbols_from_pronunciations)
-from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction, add_io_group,
-                                                                add_mp_group, get_optional,
-                                                                parse_existing_file,
-                                                                parse_non_empty_or_whitespace, parse_path)
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
+                                      SerializationOptions)
+
+from pronunciation_dictionary_utils import remove_symbols_from_pronunciations
+from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
+                                                                add_io_group, add_mp_group,
+                                                                get_optional, parse_existing_file,
+                                                                parse_non_empty_or_whitespace,
+                                                                parse_path)
 from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 

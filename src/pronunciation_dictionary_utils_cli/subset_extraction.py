@@ -5,9 +5,10 @@ from tempfile import gettempdir
 from typing import cast
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
+                                      SerializationOptions)
 
-from pronunciation_dictionary_utils import (DeserializationOptions, MultiprocessingOptions,
-                                            SerializationOptions, select_subset_dictionary)
+from pronunciation_dictionary_utils import select_subset_dictionary
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group,
                                                                 add_mp_group, get_optional,
                                                                 parse_existing_file, parse_path)

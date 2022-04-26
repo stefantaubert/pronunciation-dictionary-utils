@@ -4,16 +4,13 @@ from multiprocessing.pool import Pool
 from typing import Literal, Optional, Tuple
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
+                                      Word, get_first_pronunciation, get_last_pronunciation,
+                                      get_pronunciation_with_highest_weight,
+                                      get_pronunciation_with_lowest_weight,
+                                      get_random_pronunciation, get_weighted_pronunciation)
 from tqdm import tqdm
 
-from pronunciation_dictionary_utils.mp_options import MultiprocessingOptions
-from pronunciation_dictionary_utils.pronunciation_selection import (get_first_pronunciation,
-                                                                    get_last_pronunciation,
-                                                                    get_pronunciation_with_highest_weight,
-                                                                    get_pronunciation_with_lowest_weight,
-                                                                    get_random_pronunciation,
-                                                                    get_weighted_pronunciation)
-from pronunciation_dictionary_utils.types import PronunciationDict, Pronunciations, Word
 from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
                                                        validate_seed)
 

@@ -3,8 +3,8 @@ from typing import Iterable, Optional
 from typing import OrderedDict as ODType
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import PronunciationDict, Word
 
-from pronunciation_dictionary_utils.types import PronunciationDict, Word
 from pronunciation_dictionary_utils.validation import validate_dictionary
 
 
