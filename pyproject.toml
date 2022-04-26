@@ -59,7 +59,7 @@ Homepage = "https://github.com/stefantaubert/pronunciation-dictionary-utils"
 Issues = "https://github.com/stefantaubert/pronunciation-dictionary-utils/issues"
 
 [project.scripts]
-dict-cli = "pronunciation_dictionary_utils_cli.cli:run"
+dict-cli = "pronunciation_dictionary_utils_cli.cli:run_prod"
 
 [tool.setuptools.packages.find]
 where = ["src"]

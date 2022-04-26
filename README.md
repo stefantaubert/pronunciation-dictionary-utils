@@ -8,14 +8,15 @@ Library and CLI to modify pronunciation dictionaries (any language).
 
 ## Features
 
-- Export vocabulary
-- Export phoneme set
 - Merge multiple pronunciation dictionaries
 - Extract subset of pronunciation dictionary
 - Remove characters from vocabulary
 - Remove phonemes from pronunciations
-- Change formatting
 - Select single pronunciation per word
+- Change word casing
+- Change file formatting
+- Export vocabulary
+- Export phoneme set
 
 ## Roadmap
 
@@ -37,7 +38,7 @@ dict-cli
 
 ## Citation
 
-If you want to cite this repo, you can use this bibtex-entry:
+If you want to cite this repo, you can use this BibTeX-entry:
 
 ```bibtex
 @misc{tspdu22,

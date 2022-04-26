@@ -72,8 +72,8 @@ def _init_parser():
   return main_parser
 
 
-def configure_logger() -> None:
-  loglevel = logging.DEBUG if __debug__ else logging.INFO
+def configure_logger(productive: bool) -> None:
+  loglevel = logging.INFO if productive else logging.DEBUG
   main_logger = getLogger()
   main_logger.setLevel(loglevel)
   main_logger.manager.disable = logging.NOTSET
@@ -91,12 +91,16 @@ def configure_logger() -> None:
   console.setLevel(loglevel)
 
 
-def parse_args(args: List[str]):
-  configure_logger()
+def parse_args(args: List[str], productive: bool = False):
+  configure_logger(productive)
   logger = getLogger(__name__)
   logger.debug("Received args:")
   logger.debug(args)
   parser = _init_parser()
+  if len(args) == 0:
+    parser.print_help()
+    return
+
   received_args = parser.parse_args(args)
   params = vars(received_args)
 
@@ -107,10 +111,14 @@ def parse_args(args: List[str]):
     parser.print_help()
 
 
-def run():
+def run(productive: bool):
   arguments = sys.argv[1:]
-  parse_args(arguments)
+  parse_args(arguments, productive)
+
+
+def run_prod():
+  run(True)
 
 
 if __name__ == "__main__":
-  run()
+  run(not __debug__)
