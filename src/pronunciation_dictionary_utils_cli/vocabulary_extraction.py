@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 from pathlib import Path
 from typing import cast
 
@@ -27,9 +27,7 @@ def get_vocabulary_extraction_parser(parser: ArgumentParser):
   return get_vocabulary_ns
 
 
-def get_vocabulary_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
+def get_vocabulary_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   assert len(ns.dictionaries) > 0
 
   lp_options = DeserializationOptions(
@@ -39,9 +37,8 @@ def get_vocabulary_ns(ns: Namespace) -> bool:
   total_vocabulary = OrderedSet()
   for dictionary_path in ns.dictionaries:
     dictionary_instance = try_load_dict(
-      dictionary_path, ns.deserialization_encoding, lp_options, mp_options)
+      dictionary_path, ns.deserialization_encoding, lp_options, mp_options, logger)
     if dictionary_instance is None:
-      logger.error(f"Dictionary '{dictionary_path}' couldn't be read.")
       return False
 
     vocabulary = dictionary_instance.keys()
@@ -61,5 +58,5 @@ def get_vocabulary_ns(ns: Namespace) -> bool:
     logger.debug(ex)
     return False
 
-  logger.info(f"Written vocabulary containing {len(result)} words to: {ns.output.absolute()}")
+  logger.info(f"Written vocabulary containing {len(result)} words to: \"{ns.output.absolute()}\".")
   return True

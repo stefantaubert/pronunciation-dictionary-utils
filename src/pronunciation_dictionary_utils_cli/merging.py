@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       SerializationOptions)
@@ -27,9 +27,7 @@ def get_merging_parser(parser: ArgumentParser):
   return merge_dictionary_files_ns
 
 
-def merge_dictionary_files_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
+def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   assert len(ns.dictionaries) > 0
   if len(ns.dictionaries) == 1:
     logger.error("Please supply more than one dictionary!")
@@ -48,9 +46,8 @@ def merge_dictionary_files_ns(ns: Namespace) -> bool:
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
   for dictionary in ns.dictionaries:
-    dictionary_instance = try_load_dict(dictionary, ns.encoding, lp_options, mp_options)
+    dictionary_instance = try_load_dict(dictionary, ns.encoding, lp_options, mp_options, logger)
     if dictionary_instance is None:
-      logger.error(f"Dictionary '{dictionary}' couldn't be read.")
       return False
     if resulting_dictionary is None:
       resulting_dictionary = dictionary_instance
@@ -59,9 +56,8 @@ def merge_dictionary_files_ns(ns: Namespace) -> bool:
     merge_dictionaries(resulting_dictionary, dictionary_instance,
                        ns.duplicate_handling, ns.ratio)
 
-  success = try_save_dict(resulting_dictionary, ns.output_dictionary, ns.encoding, s_options)
+  success = try_save_dict(resulting_dictionary, ns.output_dictionary, ns.encoding, s_options, logger)
   if not success:
-    logger.error("Dictionary couldn't be written.")
     return False
 
-  logger.info(f"Written dictionary to: {ns.output_dictionary.absolute()}")
+  logger.info(f"Written dictionary to: \"{ns.output_dictionary.absolute()}\".")

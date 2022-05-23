@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       SerializationOptions)
@@ -24,19 +24,15 @@ def get_words_casing_adjustment_parser(parser: ArgumentParser):
   return change_casing_ns
 
 
-def change_casing_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
-
+def change_casing_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
       ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
   mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
 
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
-  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options)
+  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
   if dictionary_instance is None:
-    logger.error(f"Dictionary '{ns.dictionary}' couldn't be read.")
     return False
 
   removed_words, created_words = change_word_casing(
@@ -48,9 +44,8 @@ def change_casing_ns(ns: Namespace) -> bool:
 
   logger.info(f"Replaced {len(removed_words)} with {len(created_words)} word spelling(s).")
 
-  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options)
+  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
-    logger.error("Dictionary couldn't be written.")
     return False
 
-  logger.info(f"Written dictionary to: {ns.dictionary.absolute()}")
+  logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\".")

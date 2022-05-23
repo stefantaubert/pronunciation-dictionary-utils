@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       SerializationOptions)
@@ -24,9 +24,7 @@ def get_formatting_parser(parser: ArgumentParser):
   return adjust_formatting
 
 
-def adjust_formatting(ns: Namespace):
-  logger = getLogger(__name__)
-
+def adjust_formatting(ns: Namespace, logger: Logger, flogger: Logger):
   lp_options = DeserializationOptions(
       ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
   s_options = SerializationOptions(ns.parts_sep, ns.include_numbers, ns.include_weights)
@@ -35,14 +33,13 @@ def adjust_formatting(ns: Namespace):
 
   for dictionary in ns.dictionaries:
     dictionary_instance = try_load_dict(
-      dictionary, ns.deserialization_encoding, lp_options, mp_options)
+      dictionary, ns.deserialization_encoding, lp_options, mp_options, logger)
     if dictionary_instance is None:
-      logger.error(f"Dictionary '{dictionary}' couldn't be read.")
       return False
 
-    success = try_save_dict(dictionary_instance, dictionary, ns.serialization_encoding, s_options)
+    success = try_save_dict(dictionary_instance, dictionary,
+                            ns.serialization_encoding, s_options, logger)
     if not success:
-      logger.error("Dictionary couldn't be written.")
       return False
 
-    logger.info(f"Written dictionary to: {dictionary.absolute()}")
+    logger.info(f"Written dictionary to: \"{dictionary.absolute()}\".")

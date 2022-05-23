@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 from pathlib import Path
 from tempfile import gettempdir
 from typing import cast
@@ -34,13 +34,11 @@ def get_subset_extraction_parser(parser: ArgumentParser):
   return extract_subset_ns
 
 
-def extract_subset_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
-
+def extract_subset_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   try:
     vocabulary_content = cast(Path, ns.vocabulary).read_text(ns.vocabulary_encoding)
   except Exception as ex:
+    logger.debug(ex)
     logger.error("Vocabulary couldn't be read.")
     return False
 
@@ -50,9 +48,8 @@ def extract_subset_ns(ns: Namespace) -> bool:
 
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
-  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options)
+  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
   if dictionary_instance is None:
-    logger.error(f"Dictionary '{ns.dictionary}' couldn't be read.")
     return False
   logger.info(f"Parsed dictionary containing {len(dictionary_instance)} words.")
 
@@ -62,15 +59,15 @@ def extract_subset_ns(ns: Namespace) -> bool:
   oov_voc = select_subset_dictionary(dictionary_instance, vocabulary, ns.consider_case)
 
   if len(dictionary_instance) == 0:
-    logger.info(f"The target dictionary is empty! Skipped saving.")
+    logger.info("The target dictionary is empty! Skipped saving.")
   else:
-    success = try_save_dict(dictionary_instance, ns.output_dictionary, ns.encoding, s_options)
+    success = try_save_dict(dictionary_instance, ns.output_dictionary,
+                            ns.encoding, s_options, logger)
     if not success:
-      logger.error("Dictionary couldn't be written.")
       return False
 
     logger.info(
-      f"Written dictionary containing {len(dictionary_instance)} words to: {ns.output_dictionary.absolute()}")
+      f"Written dictionary containing {len(dictionary_instance)} word(s) to: \"{ns.output_dictionary.absolute()}\".")
 
   if len(oov_voc) > 0:
     logger.info(f"{len(oov_voc)} word(s) were not contained in the dictionary!")
@@ -80,10 +77,10 @@ def extract_subset_ns(ns: Namespace) -> bool:
         ns.oov_out.parent.mkdir(parents=True, exist_ok=True)
         ns.oov_out.write_text(oov_content, "UTF-8")
       except Exception as ex:
-        logger.error("OOV output couldn't be created!")
         logger.debug(ex)
+        logger.error("OOV output couldn't be created!")
         return False
-      logger.info(f"Written OOV-words to: {ns.oov_out.absolute()}")
+      logger.info(f"Written OOV-words to: \"{ns.oov_out.absolute()}\".")
   else:
     logger.info("All words were contained in the target dictionary!")
 

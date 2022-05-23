@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 from pathlib import Path
 from tempfile import gettempdir
 from typing import cast
@@ -29,9 +29,7 @@ def get_phoneme_set_extraction_parser(parser: ArgumentParser):
   return get_phoneme_set_from_ns
 
 
-def get_phoneme_set_from_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
+def get_phoneme_set_from_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   assert len(ns.dictionaries) > 0
 
   lp_options = DeserializationOptions(
@@ -41,9 +39,8 @@ def get_phoneme_set_from_ns(ns: Namespace) -> bool:
   total_vocabulary = OrderedSet()
   for dictionary_path in ns.dictionaries:
     dictionary_instance = try_load_dict(
-      dictionary_path, ns.deserialization_encoding, lp_options, mp_options)
+      dictionary_path, ns.deserialization_encoding, lp_options, mp_options, logger)
     if dictionary_instance is None:
-      logger.error(f"Dictionary '{dictionary_path}' couldn't be read.")
       return False
 
     vocabulary = get_phoneme_set(dictionary_instance)
@@ -59,8 +56,10 @@ def get_phoneme_set_from_ns(ns: Namespace) -> bool:
     ns.output.parent.mkdir(parents=True, exist_ok=True)
     cast(Path, ns.output).write_text(content, ns.output_encoding)
   except Exception as ex:
+    logger.debug(ex)
     logger.error("Phoneme set couldn't be saved!")
     return False
 
-  logger.info(f"Written phoneme set containing {len(result)} phonemes to: {ns.output.absolute()}")
+  logger.info(
+    f"Written phoneme set containing {len(result)} phonemes to: \"{ns.output.absolute()}\".")
   return True

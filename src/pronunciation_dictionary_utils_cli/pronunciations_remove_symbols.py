@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from logging import getLogger
+from logging import Logger
 from pathlib import Path
 from tempfile import gettempdir
 
@@ -36,10 +36,7 @@ def get_pronunciations_remove_symbols_parser(parser: ArgumentParser):
   return remove_symbols_from_pronunciations_ns
 
 
-def remove_symbols_from_pronunciations_ns(ns: Namespace) -> bool:
-  logger = getLogger(__name__)
-  logger.debug(ns)
-
+def remove_symbols_from_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   if ns.keep_empty and ns.empty_symbol is None:
     logger.error("An empty symbol needs to be supplied if keep_empty is true!")
     return False
@@ -50,9 +47,8 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace) -> bool:
 
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
-  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options)
+  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
   if dictionary_instance is None:
-    logger.error(f"Dictionary '{ns.dictionary}' couldn't be read.")
     return False
 
   removed_words, changed_counter = remove_symbols_from_pronunciations(
@@ -64,12 +60,11 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace) -> bool:
 
   logger.info(f"Changed pronunciations of {changed_counter} word(s).")
 
-  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options)
+  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
-    logger.error("Dictionary couldn't be written.")
     return False
 
-  logger.info(f"Written dictionary to: {ns.dictionary.absolute()}")
+  logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
 
   if len(removed_words) > 0:
     logger.warning(f"{len(removed_words)} words were removed.")
@@ -79,8 +74,9 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace) -> bool:
       try:
         ns.removed_out.write_text(content, "UTF-8")
       except Exception as ex:
+        logger.debug(ex)
         logger.error("Removed words output couldn't be created!")
         return False
-      logger.info(f"Written removed words to: {ns.removed_out.absolute()}")
+      logger.info(f"Written removed words to: \"{ns.removed_out.absolute()}\".")
   else:
     logger.info("No words were removed.")
