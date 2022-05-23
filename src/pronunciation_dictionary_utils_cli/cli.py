@@ -76,24 +76,6 @@ def _init_parser():
   )
   main_parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
   subparsers = main_parser.add_subparsers(help="description")
-
-  for command, description, method in get_parsers():
-    method_parser = subparsers.add_parser(
-      command, help=description, formatter_class=formatter)
-    method_parser.set_defaults(**{
-      INVOKE_HANDLER_VAR: method(method_parser),
-    })
-
-  return main_parser
-
-
-def _init_parser():
-  main_parser = ArgumentParser(
-    formatter_class=formatter,
-    description="This program provides methods to modify TextGrids (.TextGrid) and their corresponding audios (.wav).",
-  )
-  main_parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
-  subparsers = main_parser.add_subparsers(help="description")
   default_log_path = Path(gettempdir()) / f"{prog_name}.log"
 
   for command, description, method in get_parsers():
