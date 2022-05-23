@@ -49,3 +49,4 @@ def change_casing_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
     return False
 
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\".")
+  return True

@@ -43,3 +43,4 @@ def adjust_formatting(ns: Namespace, logger: Logger, flogger: Logger):
       return False
 
     logger.info(f"Written dictionary to: \"{dictionary.absolute()}\".")
+  return True

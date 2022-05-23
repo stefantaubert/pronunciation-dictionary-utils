@@ -146,7 +146,6 @@ def parse_args(args: List[str]) -> None:
 
   start = perf_counter()
   cmd_flogger, cmd_logger = init_and_return_loggers(__name__)
-
   #success, changed_anything = invoke_handler(ns, cmd_logger, cmd_flogger)
   success = invoke_handler(ns, cmd_logger, cmd_flogger)
   if success:

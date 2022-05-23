@@ -80,3 +80,4 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace, logger: Logger, flogger
       logger.info(f"Written removed words to: \"{ns.removed_out.absolute()}\".")
   else:
     logger.info("No words were removed.")
+  return True

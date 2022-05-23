@@ -78,3 +78,4 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
       logger.info(f"Written removed words to: \"{ns.removed_out.absolute()}\".")
   else:
     logger.info("No words were removed.")
+  return True

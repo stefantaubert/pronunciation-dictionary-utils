@@ -61,3 +61,4 @@ def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) ->
     return False
 
   logger.info(f"Written dictionary to: \"{ns.output_dictionary.absolute()}\".")
+  return True

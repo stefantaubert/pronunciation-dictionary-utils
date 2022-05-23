@@ -49,3 +49,4 @@ def remove_multiple_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Lo
     return False
 
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\".")
+  return True
