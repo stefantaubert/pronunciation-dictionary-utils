@@ -19,8 +19,9 @@ def try_save_dict(pronunciation_dict: PronunciationDict, path: Path, encoding: s
 
 
 def try_load_dict(path: Path, encoding: str, options: DeserializationOptions, mp_options: MultiprocessingOptions, logger: Logger) -> Optional[PronunciationDict]:
+  # Output logs to file
   pdict_logger = getLogger("pronunciation_dictionary.deserialization")
-  # pdict_logger.parent = get_file_logger()
+  pdict_logger.parent = get_file_logger()
 
   try:
     result = load_dict(path, encoding, options, mp_options)
