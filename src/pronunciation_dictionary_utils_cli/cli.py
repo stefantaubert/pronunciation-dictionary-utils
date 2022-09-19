@@ -19,6 +19,8 @@ from pronunciation_dictionary_utils_cli.logging_configuration import (configure_
 from pronunciation_dictionary_utils_cli.merging import get_merging_parser
 from pronunciation_dictionary_utils_cli.phoneme_set_extraction import \
   get_phoneme_set_extraction_parser
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols import \
+  get_pronunciations_map_symbols_parser
 from pronunciation_dictionary_utils_cli.pronunciations_remove_symbols import \
   get_pronunciations_remove_symbols_parser
 from pronunciation_dictionary_utils_cli.single_pronunciation_selection import \
@@ -56,6 +58,8 @@ def get_parsers() -> Parsers:
      get_merging_parser),
     ("extract", "extract subset of dictionary vocabulary",
      get_subset_extraction_parser),
+    ("map-symbols-in-pronunciations", "map phonemes/symbols in pronunciations to another phoneme/symbol",
+     get_pronunciations_map_symbols_parser),
     ("remove-symbols-from-pronunciations", "remove phonemes/symbols from pronunciations",
      get_pronunciations_remove_symbols_parser),
     ("remove-symbols-from-words", "remove characters/symbols from words",

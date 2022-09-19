@@ -23,6 +23,7 @@ def get_pronunciations_remove_symbols_parser(parser: ArgumentParser):
   parser.description = "Remove symbols from pronunciations."
   parser.add_argument("dictionary", metavar='dictionary',
                       type=parse_existing_file, help="dictionary file")
+  # TODO maybe remove default arg and make positional
   parser.add_argument("-s", "--symbols", type=str, metavar='SYMBOL', nargs='+',
                       help="remove these symbols from the pronunciations", action=ConvertToOrderedSetAction, default=DEFAULT_PUNCTUATION)
   parser.add_argument("-k", "--keep-empty", action="store_true",

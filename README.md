@@ -8,13 +8,14 @@ Library and CLI to modify pronunciation dictionaries (any language).
 
 ## Features
 
-- Merge multiple pronunciation dictionaries
+- Merge multiple pronunciation dictionaries into one
 - Extract subset of pronunciation dictionary
 - Remove characters from vocabulary
 - Remove phonemes from pronunciations
+- Map phonemes in pronunciations to different ones, e.g., mapping ARPAbet to IPA
 - Select single pronunciation per word
 - Change word casing
-- Change file formatting
+- Change formatting
 - Export vocabulary
 - Export phoneme set
 
@@ -22,7 +23,6 @@ Library and CLI to modify pronunciation dictionaries (any language).
 
 - Adding tests
 - Implementation of printing of statistics
-- Implementation of phoneme mapping, e.g., mapping ARPAbet to IPA
 
 ## Installation
 
