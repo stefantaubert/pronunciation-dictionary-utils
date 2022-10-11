@@ -23,6 +23,7 @@ Library and CLI to modify pronunciation dictionaries (any language).
 
 - Adding tests
 - Implementation of printing of statistics
+- Add change of pronunciation for a word via CLI
 
 ## Installation
 
