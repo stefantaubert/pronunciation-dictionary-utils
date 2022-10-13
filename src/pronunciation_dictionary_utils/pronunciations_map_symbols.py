@@ -12,8 +12,9 @@ from pronunciation_dictionary_utils.validation import (validate_dictionary, vali
                                                        validate_type)
 
 
-def __validate_symbol(symbols: str) -> Optional[str]:
-  if not isinstance(symbols, str):
+def __validate_symbol(symbol: str) -> Optional[str]:
+  assert len(symbol) > 0
+  if not isinstance(symbol, str):
     return "Value needs of type 'str'!"
   return None
 
