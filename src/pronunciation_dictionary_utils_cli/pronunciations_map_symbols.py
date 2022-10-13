@@ -19,7 +19,6 @@ DEFAULT_EMPTY_WEIGHT = 1
 
 
 def get_pronunciations_map_symbols_parser(parser: ArgumentParser):
-  default_removed_out = Path(gettempdir()) / "removed-words.txt"
   parser.description = "Map symbols in pronunciations."
   parser.add_argument("dictionary", metavar='dictionary',
                       type=parse_existing_file, help="dictionary file")
