@@ -92,12 +92,13 @@ def process_map_pronunciation_partial(word: Word, symbols: OrderedSet[Symbol], m
     )
 
     if new_pronunciation != pronunciation:
-      if len(new_pronunciation) > 0:
-        if new_pronunciation in new_pronunciations:
-          new_pronunciations[new_pronunciation] += weight
-        else:
-          new_pronunciations[new_pronunciation] = weight
       changed_anything = True
+
+    assert len(new_pronunciation) > 0
+    if new_pronunciation in new_pronunciations:
+      new_pronunciations[new_pronunciation] += weight
+    else:
+      new_pronunciations[new_pronunciation] = weight
 
   if changed_anything:
     return word, new_pronunciations
@@ -118,13 +119,13 @@ def process_map_pronunciation_full(word: Word, symbols: OrderedSet[Symbol], map_
     )
 
     if new_pronunciation != pronunciation:
-      if len(new_pronunciation) > 0:
-        if new_pronunciation in new_pronunciations:
-          new_pronunciations[new_pronunciation] += weight
-        else:
-          new_pronunciations[new_pronunciation] = weight
       changed_anything = True
 
+    assert len(new_pronunciation) > 0
+    if new_pronunciation in new_pronunciations:
+      new_pronunciations[new_pronunciation] += weight
+    else:
+      new_pronunciations[new_pronunciation] = weight
   if changed_anything:
     return word, new_pronunciations
   return word, None
