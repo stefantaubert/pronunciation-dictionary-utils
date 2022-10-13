@@ -23,7 +23,7 @@ def get_pronunciations_map_symbols_parser(parser: ArgumentParser):
   parser.description = "Map symbols in pronunciations."
   parser.add_argument("dictionary", metavar='dictionary',
                       type=parse_existing_file, help="dictionary file")
-  parser.add_argument("from_symbols", type=str, metavar='FROM-SYMBOL', nargs='+',
+  parser.add_argument("from_symbols", type=parse_non_empty_or_whitespace, metavar='FROM-SYMBOL', nargs='+',
                       help="map these symbols from the pronunciations to MAP_SYMBOL", action=ConvertToOrderedSetAction, default=DEFAULT_PUNCTUATION)
   parser.add_argument("to_symbol", type=parse_non_empty_or_whitespace,
                       metavar="TO-SYMBOL", help="this symbol will be taken")
