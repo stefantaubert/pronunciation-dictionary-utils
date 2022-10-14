@@ -15,7 +15,7 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 def get_formatting_parser(parser: ArgumentParser):
   parser.description = ""
 
-  parser.add_argument("dictionaries", metavar='dictionaries', type=parse_existing_file, nargs="+",
+  parser.add_argument("dictionaries", metavar='DICTIONARY', type=parse_existing_file, nargs="+",
                       help="dictionary files", action=ConvertToOrderedSetAction)
   add_deserialization_group(parser)
   add_serialization_group(parser)

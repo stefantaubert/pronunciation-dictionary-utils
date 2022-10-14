@@ -18,11 +18,11 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 def get_subset_extraction_parser(parser: ArgumentParser):
   parser.description = "Extract subset of dictionary."
   default_oov_out = Path(gettempdir()) / "oov.txt"
-  parser.add_argument("dictionary", metavar='dictionary',
+  parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
-  parser.add_argument("vocabulary", metavar='vocabulary',
+  parser.add_argument("vocabulary", metavar='VOCABULARY',
                       type=parse_existing_file, help="vocabulary that should be extracted")
-  parser.add_argument("output_dictionary", metavar='output-dictionary',
+  parser.add_argument("output_dictionary", metavar='OUTPUT-DICTIONARY',
                       type=parse_path, help="file to the output dictionary")
   add_encoding_argument(parser, "-ve", "--vocabulary-encoding", "encoding of the vocabulary file")
   parser.add_argument("--oov-out", metavar="PATH", type=get_optional(parse_path),

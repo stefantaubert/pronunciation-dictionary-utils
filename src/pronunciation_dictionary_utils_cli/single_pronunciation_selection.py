@@ -13,7 +13,7 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 def get_single_pronunciation_selection_parser(parser: ArgumentParser):
   parser.description = "Select a single pronunciation for each word."
-  parser.add_argument("dictionary", metavar='dictionary',
+  parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
   parser.add_argument("-m", "--mode", type=str, choices=["first", "last", "highest-weight", "lowest-weight", "random"], metavar="MODE",
                       help="mode to select the target pronunciation: first -> the first pronunciation; last -> the last pronunciation; highest-weight -> the first pronunciation with the highest weight; lowest-weight -> the first pronunciation with the lowest-weight & random -> a random pronunciation", default="highest-weight")

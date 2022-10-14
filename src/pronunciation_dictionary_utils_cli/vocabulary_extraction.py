@@ -15,9 +15,9 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict
 
 def get_vocabulary_extraction_parser(parser: ArgumentParser):
   parser.description = "Export vocabulary (i.e., words that are contained in the dictionaries)."
-  parser.add_argument("dictionaries", metavar='dictionaries', type=parse_existing_file, nargs="+",
+  parser.add_argument("dictionaries", metavar='DICTIONARY', type=parse_existing_file, nargs="+",
                       help="dictionary files", action=ConvertToOrderedSetAction)
-  parser.add_argument("output", metavar="output", type=parse_path,
+  parser.add_argument("output", metavar="OUTPUT-VOCABULARY", type=parse_path,
                       help="output vocabulary to this file")
   add_encoding_argument(parser, "-e", "--output-encoding", "encoding of the vocabulary file")
   parser.add_argument("-u", "--unsorted", action="store_true",

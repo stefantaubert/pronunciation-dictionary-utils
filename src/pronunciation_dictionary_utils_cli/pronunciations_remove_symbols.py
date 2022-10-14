@@ -21,13 +21,13 @@ DEFAULT_EMPTY_WEIGHT = 1
 def get_pronunciations_remove_symbols_parser(parser: ArgumentParser):
   default_removed_out = Path(gettempdir()) / "removed-words.txt"
   parser.description = "Remove symbols from pronunciations."
-  parser.add_argument("dictionary", metavar='dictionary',
+  parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
   parser.add_argument("symbols", type=str, metavar='SYMBOL', nargs='+',
                       help="remove these symbols from the pronunciations", action=ConvertToOrderedSetAction)
   parser.add_argument("-k", "--keep-empty", action="store_true",
                       help="if a pronunciation will be empty after removal, keep the corresponding word in the dictionary and assign the value of empty-symbol")
-  parser.add_argument("-es", "--empty-symbol", type=get_optional(parse_non_empty_or_whitespace),
+  parser.add_argument("-es", "--empty-symbol", metavar="SYMBOL", type=get_optional(parse_non_empty_or_whitespace),
                       help="if keep-empty: assign this symbol to the word where no pronunciations result because of the symbol removal", default="sil")
   parser.add_argument("-ro", "--removed-out", metavar="PATH", type=get_optional(parse_path),
                       help="write removed words (i.e., words that had no pronunciation anymore) to this file", default=default_removed_out)

@@ -13,11 +13,11 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 def get_words_casing_adjustment_parser(parser: ArgumentParser):
   parser.description = "Adjust casing of words in dictionary."
-  parser.add_argument("dictionary", metavar='dictionary',
+  parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
-  parser.add_argument("-m", "--mode", type=str, choices=["lower", "upper"],
+  parser.add_argument("-m", "--mode", metavar="MODE", type=str, choices=["lower", "upper"],
                       help="mode to change the casing", default="lower")
-  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1,
+  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1, metavar="RATIO",
                       help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio)", default=0.5)
   add_io_group(parser)
   add_mp_group(parser)

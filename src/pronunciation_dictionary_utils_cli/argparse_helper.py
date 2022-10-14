@@ -34,7 +34,7 @@ def add_io_group(parser: ArgumentParser) -> None:
                      help="consider comments in pronunciations while deserialization")
   group.add_argument("-cw", "--consider-weights", action="store_true",
                      help="consider weights while serialization/deserialization")
-  group.add_argument("-ps", "--parts-sep", type=parse_non_empty,
+  group.add_argument("-ps", "--parts-sep", type=parse_non_empty, metavar="SEP",
                      help="symbol to separate word/weight/pronunciation in a line while serialization", choices=["TAB", "SPACE", "DOUBLE-SPACE"], default="DOUBLE-SPACE")
 
 
@@ -42,7 +42,7 @@ def add_serialization_group(parser: ArgumentParser) -> None:
   group = parser.add_argument_group('serialization arguments')
   add_encoding_argument(group, "-se", "--serialization-encoding", "encoding")
   group.add_argument("-ps", "--parts-sep", type=parse_non_empty,
-                     help="symbol to separate word/weight/pronunciation in a line", choices=["TAB", "SPACE", "DOUBLE-SPACE"], default="DOUBLE-SPACE")
+                     help="symbol to separate word/weight/pronunciation in a line", choices=["TAB", "SPACE", "DOUBLE-SPACE"], metavar="SEP", default="DOUBLE-SPACE")
   group.add_argument("-in", "--include-numbers", action="store_true",
                      help="include word numbers")
   group.add_argument("-iw", "--include-weights", action="store_true",
@@ -73,12 +73,12 @@ def add_n_jobs_argument(parser: ArgumentParser) -> None:
 
 
 def add_chunksize_argument(parser: ArgumentParser, target: str = "words", default: int = DEFAULT_CHUNKSIZE) -> None:
-  parser.add_argument("-c", "--chunksize", type=parse_positive_integer, metavar="NUMBER",
+  parser.add_argument("-c", "--chunksize", type=parse_positive_integer, metavar="SIZE",
                       help=f"amount of {target} to chunk into one job", default=default)
 
 
 def add_maxtaskperchild_argument(parser: ArgumentParser) -> None:
-  parser.add_argument("-mt", "--maxtasksperchild", type=get_optional(parse_positive_integer), metavar="NUMBER",
+  parser.add_argument("-mt", "--maxtasksperchild", type=get_optional(parse_positive_integer), metavar="COUNT",
                       help="amount of tasks per child", default=DEFAULT_MAXTASKSPERCHILD)
 
 

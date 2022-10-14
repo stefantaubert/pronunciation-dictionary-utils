@@ -17,9 +17,9 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict
 def get_phoneme_set_extraction_parser(parser: ArgumentParser):
   default_removed_out = Path(gettempdir()) / "removed-words.txt"
   parser.description = "Remove symbols from pronunciations."
-  parser.add_argument("dictionaries", metavar='dictionaries', type=parse_existing_file, nargs="+",
+  parser.add_argument("dictionaries", metavar='DICTIONARY', type=parse_existing_file, nargs="+",
                       help="dictionary files", action=ConvertToOrderedSetAction)
-  parser.add_argument("output", metavar="output", type=parse_path,
+  parser.add_argument("output", metavar="OUTPUT", type=parse_path,
                       help="output phoneme set to this file", default=default_removed_out)
   add_encoding_argument(parser, "-e", "--output-encoding", "encoding of the vocabulary file")
   parser.add_argument("-u", "--unsorted", action="store_true",

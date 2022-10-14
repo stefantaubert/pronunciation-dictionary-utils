@@ -21,11 +21,11 @@ def get_vocabulary_remove_symbols_parser(parser: ArgumentParser):
                       type=parse_existing_file, help="vocabulary file")
   parser.add_argument("symbols", type=str, metavar='SYMBOL', nargs='+',
                       help="remove these symbols from the words", action=ConvertToOrderedSetAction)
-  parser.add_argument("-m", "--mode", type=str, choices=["all", "start", "end", "both"],
+  parser.add_argument("-m", "--mode", type=str, choices=["all", "start", "end", "both"], metavar="MODE",
                       help="mode to remove the symbols: all = on all locations; start = only from start; end = only from end; both = start + end", default="both")
   # parser.add_argument("--remove-empty", action="store_true",
   #                     help="if a pronunciation will be empty after removal, remove the corresponding word from the dictionary")
-  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1,
+  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1, metavar="RATIO",
                       help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio)", default=0.5)
   parser.add_argument("-ro", "--removed-out", metavar="PATH", type=get_optional(parse_path),
                       help="write removed words to this file", default=default_removed_out)
