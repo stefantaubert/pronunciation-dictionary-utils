@@ -21,8 +21,8 @@ def get_words_remove_symbols_parser(parser: ArgumentParser):
   parser.description = "Remove symbols from words. If all symbols of a word will be removed, the word will be taken out of the dictionary."
   parser.add_argument("dictionary", metavar='dictionary',
                       type=parse_existing_file, help="dictionary file")
-  parser.add_argument("-s", "--symbols", type=str, metavar='SYMBOL', nargs='+',
-                      help="remove these symbols from the words", action=ConvertToOrderedSetAction, default=DEFAULT_PUNCTUATION)
+  parser.add_argument("symbols", type=str, metavar='SYMBOL', nargs='+',
+                      help="remove these symbols from the words", action=ConvertToOrderedSetAction)
   parser.add_argument("-m", "--mode", type=str, choices=["all", "start", "end", "both"],
                       help="mode to remove the symbols: all = on all locations; start = only from start; end = only from end; both = start + end", default="both")
   # parser.add_argument("--remove-empty", action="store_true",
