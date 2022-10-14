@@ -5,13 +5,7 @@ from typing import OrderedDict as ODType
 from ordered_set import OrderedSet
 from pronunciation_dictionary import PronunciationDict, Word
 
-from pronunciation_dictionary_utils.validation import validate_dictionary
-
-
-def validate_vocabulary(vocabulary: OrderedSet[Word]) -> Optional[str]:
-  if not isinstance(vocabulary, OrderedSet):
-    return "Type needs to be 'OrderedSet'!"
-  return None
+from pronunciation_dictionary_utils.validation import validate_dictionary, validate_vocabulary
 
 
 def validate_consider_case(consider_case: bool) -> Optional[str]:
@@ -23,7 +17,7 @@ def validate_consider_case(consider_case: bool) -> Optional[str]:
 def select_subset_dictionary(dictionary: PronunciationDict, vocabulary: OrderedSet[Word], consider_case: bool) -> OrderedSet[Word]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
-  if msg := validate_vocabulary(dictionary):
+  if msg := validate_vocabulary(vocabulary):
     raise ValueError(f"Parameter 'vocabulary': {msg}")
   if msg := validate_consider_case(dictionary):
     raise ValueError(f"Parameter 'consider_case': {msg}")

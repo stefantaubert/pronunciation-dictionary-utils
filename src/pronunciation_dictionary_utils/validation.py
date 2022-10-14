@@ -1,7 +1,8 @@
 from collections import OrderedDict
 from typing import Any, Optional
 
-from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations
+from ordered_set import OrderedSet
+from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations, Word
 
 
 class ValidationError():
@@ -15,6 +16,12 @@ class InternalError(ValidationError):
   @property
   def default_message(self) -> str:
     return "Internal error!"
+
+
+def validate_vocabulary(vocabulary: OrderedSet[Word]) -> Optional[str]:
+  if not isinstance(vocabulary, OrderedSet):
+    return "Type needs to be 'OrderedSet'!"
+  return None
 
 
 def validate_dictionary(dictionary: PronunciationDict) -> Optional[str]:
