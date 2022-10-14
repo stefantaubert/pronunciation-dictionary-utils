@@ -14,13 +14,13 @@ from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 def get_merging_parser(parser: ArgumentParser):
   parser.description = "Merge multiple dictionaries into one."
-  parser.add_argument("dictionaries", metavar='dictionaries', type=parse_existing_file, nargs="+",
+  parser.add_argument("dictionaries", metavar='DICTIONARY', type=parse_existing_file, nargs="+",
                       help="dictionary files", action=ConvertToOrderedSetAction)
-  parser.add_argument("output_dictionary", metavar='output-dictionary', type=parse_path,
+  parser.add_argument("output_dictionary", metavar='OUTPUT-DICTIONARY', type=parse_path,
                       help="file to the output dictionary")
-  parser.add_argument("--duplicate-handling", type=str,
+  parser.add_argument("--duplicate-handling", type=str, metavar="MODE",
                       choices=["add", "extend", "replace"], help="sets how existing pronunciations should be handled: add = add missing pronunciations; extend = add missing pronunciations and extend existing ones; replace: add missing pronunciations and replace existing ones.", default="extend")
-  parser.add_argument("--ratio", type=get_optional(parse_float_0_to_1),
+  parser.add_argument("--ratio", type=get_optional(parse_float_0_to_1), metavar="RATIO",
                       help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio); only relevant on 'extend'", default=0.5)
   add_io_group(parser)
   add_mp_group(parser)
