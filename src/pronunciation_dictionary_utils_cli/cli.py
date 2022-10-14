@@ -60,6 +60,8 @@ def get_parsers() -> Parsers:
      get_subset_extraction_parser),
     ("map-symbols-in-pronunciations", "map phonemes/symbols in pronunciations to another phoneme/symbol",
      get_pronunciations_map_symbols_parser),
+    ("remove-symbols-from-vocabulary", "remove phonemes/symbols from vocabulary",
+     get_vocabulary_remove_symbols_parser),
     ("remove-symbols-from-pronunciations", "remove phonemes/symbols from pronunciations",
      get_pronunciations_remove_symbols_parser),
     ("remove-symbols-from-words", "remove characters/symbols from words",
