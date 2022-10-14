@@ -5,18 +5,13 @@ from tempfile import gettempdir
 from typing import cast
 
 from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      SerializationOptions)
+from pronunciation_dictionary import MultiprocessingOptions
 
-from pronunciation_dictionary_utils import remove_symbols_from_words
 from pronunciation_dictionary_utils.vocabulary_remove_symbols import remove_symbols_from_vocabulary
 from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
-                                                                add_encoding_argument, add_io_group,
-                                                                add_mp_group, get_optional,
-                                                                parse_existing_file,
+                                                                add_encoding_argument, add_mp_group,
+                                                                get_optional, parse_existing_file,
                                                                 parse_float_0_to_1, parse_path)
-from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
-from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 
 def get_vocabulary_remove_symbols_parser(parser: ArgumentParser):

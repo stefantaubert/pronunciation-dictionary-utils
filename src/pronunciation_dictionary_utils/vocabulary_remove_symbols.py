@@ -3,12 +3,10 @@ from multiprocessing.pool import Pool
 from typing import Literal, Optional, Tuple
 
 from ordered_set import OrderedSet
-from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Word
+from pronunciation_dictionary import MultiprocessingOptions, Word
 from tqdm import tqdm
 
-from pronunciation_dictionary_utils.common import merge_pronunciations
-from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
-                                                       validate_ratio, validate_vocabulary)
+from pronunciation_dictionary_utils.validation import validate_mp_options, validate_vocabulary
 
 
 def __validate_mode(mode: str) -> Optional[str]:
