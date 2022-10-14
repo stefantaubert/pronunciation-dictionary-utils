@@ -21,7 +21,7 @@ def __validate_symbols(symbols: str) -> Optional[str]:
   return None
 
 
-def remove_symbols_from_vocabulary(vocabulary: OrderedSet[Word], symbols: str, mode: str, mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], int]:
+def remove_symbols_from_vocabulary(vocabulary: OrderedSet[Word], symbols: str, mode: str, mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], OrderedSet[Word]]:
   if msg := validate_vocabulary(vocabulary):
     raise ValueError(f"Parameter 'vocabulary': {msg}")
   if msg := __validate_symbols(symbols):
@@ -47,18 +47,20 @@ def remove_symbols_from_vocabulary(vocabulary: OrderedSet[Word], symbols: str, m
     iterator = pool.imap(process_method, vocabulary, mp_options.chunksize)
     new_words_to_words = dict(tqdm(iterator, total=len(vocabulary), unit="words"))
 
-  changed_words = 0
+  changed_words = OrderedSet()
   removed_words_entirely = OrderedSet()
   final_voc = OrderedSet()
   for word in vocabulary:
     new_word = new_words_to_words[word]
     changed_word = new_word is not None
     if changed_word:
-      changed_words += 1
+      changed_words.add(word)
       if new_word == "":
         removed_words_entirely.add(word)
         continue
-    final_voc.add(word)
+      final_voc.add(new_word)
+    else:
+      final_voc.add(word)
 
   vocabulary.clear()
   vocabulary |= final_voc

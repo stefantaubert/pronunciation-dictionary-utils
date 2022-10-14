@@ -52,7 +52,7 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
   removed_words_entirely, changed_words = remove_symbols_from_vocabulary(
     vocabulary, symbols_str, ns.mode, mp_options)
 
-  if changed_words == 0:
+  if len(changed_words) == 0:
     logger.info("Didn't changed anything.")
     return True
 
