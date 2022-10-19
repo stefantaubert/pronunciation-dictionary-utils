@@ -33,6 +33,7 @@ from pronunciation_dictionary_utils_cli.vocabulary_remove_symbols import \
 from pronunciation_dictionary_utils_cli.words_casing_adjustment import \
   get_words_casing_adjustment_parser
 from pronunciation_dictionary_utils_cli.words_remove_symbols import get_words_remove_symbols_parser
+from pronunciation_dictionary_utils_cli.words_sorting import get_words_sorting_parser
 
 prog_name = "pronunciation-dictionary-utils"
 __version__ = version(prog_name)
@@ -74,6 +75,7 @@ def get_parsers() -> Parsers:
      get_single_pronunciation_selection_parser),
     ("change-word-casing", "transform all words to upper- or lowercase",
      get_words_casing_adjustment_parser),
+    ("sort", "sort dictionary after words", get_words_sorting_parser),
   )
 
 
