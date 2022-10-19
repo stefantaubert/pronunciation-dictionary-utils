@@ -23,6 +23,8 @@ from pronunciation_dictionary_utils_cli.pronunciations_map_symbols import \
   get_pronunciations_map_symbols_parser
 from pronunciation_dictionary_utils_cli.pronunciations_remove_symbols import \
   get_pronunciations_remove_symbols_parser
+from pronunciation_dictionary_utils_cli.pronunciations_sorting import \
+  get_pronunciations_sorting_parser
 from pronunciation_dictionary_utils_cli.single_pronunciation_selection import \
   get_single_pronunciation_selection_parser
 from pronunciation_dictionary_utils_cli.subset_extraction import get_subset_extraction_parser
@@ -75,7 +77,8 @@ def get_parsers() -> Parsers:
      get_single_pronunciation_selection_parser),
     ("change-word-casing", "transform all words to upper- or lowercase",
      get_words_casing_adjustment_parser),
-    ("sort", "sort dictionary after words", get_words_sorting_parser),
+    ("sort-words", "sort dictionary after words", get_words_sorting_parser),
+    ("sort-pronunciations", "sort dictionary pronunciations", get_pronunciations_sorting_parser),
   )
 
 
