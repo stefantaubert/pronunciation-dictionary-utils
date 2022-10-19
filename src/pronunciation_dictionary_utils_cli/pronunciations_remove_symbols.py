@@ -12,7 +12,6 @@ from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrdered
                                                                 get_optional, parse_existing_file,
                                                                 parse_non_empty_or_whitespace,
                                                                 parse_path)
-from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 DEFAULT_EMPTY_WEIGHT = 1

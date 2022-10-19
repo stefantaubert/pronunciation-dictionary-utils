@@ -11,7 +11,6 @@ from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrdered
                                                                 add_io_group, add_mp_group,
                                                                 get_optional, parse_existing_file,
                                                                 parse_float_0_to_1, parse_path)
-from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 
@@ -62,7 +61,7 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
   if not success:
     return False
 
-  logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
+  logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\".")
 
   if len(removed_words_entirely) > 0:
     logger.warning(f"{len(removed_words_entirely)} words were removed entirely.")
