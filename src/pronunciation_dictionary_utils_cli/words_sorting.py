@@ -16,7 +16,7 @@ def get_words_sorting_parser(parser: ArgumentParser):
   parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
   parser.add_argument("-d", "--descending", action="store_true", help="sort descending")
-  parser.add_argument("-c", "--consider-case", action="store_true", help="consider casing")
+  parser.add_argument("-co", "--consider-case", action="store_true", help="consider casing")
   add_io_group(parser)
   add_mp_group(parser)
   return sort_words_ns
@@ -41,7 +41,7 @@ def sort_words_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
     logger.info("Didn't changed anything.")
     return True
 
-  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
+  success = try_save_dict(new_dictionary, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
     return False
 
