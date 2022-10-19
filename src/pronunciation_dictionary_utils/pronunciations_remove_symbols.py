@@ -143,14 +143,14 @@ def remove_symbols_from_pronunciations_entry(pronunciations: Pronunciations, sym
   for pronunciation, weight in pronunciations.items():
     new_pronunciation = tuple(remove_symbols_mode(pronunciation, symbols, mode))
 
-    if new_pronunciation != pronunciation:
-      if len(new_pronunciation) > 0:
-        if new_pronunciation in new_pronunciations:
-          new_pronunciations[new_pronunciation] += weight
-        else:
-          new_pronunciations[new_pronunciation] = weight
+    if new_pronunciation != new_pronunciations:
       changed_anything = True
 
+    if len(new_pronunciation) > 0:
+      if new_pronunciation in new_pronunciations:
+        new_pronunciations[new_pronunciation] += weight
+      else:
+        new_pronunciations[new_pronunciation] = weight
   if changed_anything:
     return new_pronunciations
   return pronunciations
