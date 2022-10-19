@@ -25,6 +25,8 @@ def get_pronunciations_remove_symbols_parser(parser: ArgumentParser):
                       type=parse_existing_file, help="dictionary file")
   parser.add_argument("symbols", type=str, metavar='SYMBOL', nargs='+',
                       help="remove these symbols from the pronunciations", action=ConvertToOrderedSetAction)
+  parser.add_argument("-m", "--mode", type=str, choices=["all", "start", "end", "both"], metavar="MODE",
+                      help="mode to remove the symbols: all = on all locations; start = only from start; end = only from end; both = start + end", default="both")
   parser.add_argument("-k", "--keep-empty", action="store_true",
                       help="if a pronunciation will be empty after removal, keep the corresponding word in the dictionary and assign the value of empty-symbol")
   parser.add_argument("-es", "--empty-symbol", metavar="SYMBOL", type=get_optional(parse_non_empty_or_whitespace),
@@ -52,7 +54,7 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace, logger: Logger, flogger
     return False
 
   removed_words, changed_counter = remove_symbols_from_pronunciations(
-    dictionary_instance, ns.symbols, ns.keep_empty, ns.empty_symbol, mp_options)
+    dictionary_instance, ns.symbols, ns.mode, ns.keep_empty, ns.empty_symbol, mp_options)
 
   if changed_counter == 0:
     logger.info("Didn't changed anything.")
