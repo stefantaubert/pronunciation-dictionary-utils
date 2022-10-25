@@ -34,7 +34,7 @@ def sort_words_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
 
   new_dictionary = sort_words(dictionary_instance, ns.descending, ns.consider_case)
 
-  changed_anything = new_dictionary is not None
+  changed_anything = new_dictionary != dictionary_instance
 
   if not changed_anything:
     logger.info("Didn't changed anything.")
