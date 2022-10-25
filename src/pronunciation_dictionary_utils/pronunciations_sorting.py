@@ -11,7 +11,7 @@ from pronunciation_dictionary_utils.validation import (validate_dictionary, vali
                                                        validate_type)
 
 
-def sort_pronunciations(dictionary: PronunciationDict, descending: bool, ignore_weight: bool, mp_options: MultiprocessingOptions) -> PronunciationDict:
+def sort_pronunciations(dictionary: PronunciationDict, descending: bool, ignore_weight: bool, mp_options: MultiprocessingOptions) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(descending, bool):
@@ -38,7 +38,6 @@ def sort_pronunciations(dictionary: PronunciationDict, descending: bool, ignore_
     pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words"))
 
   changed_counter = 0
-  removed_words = OrderedSet()
   for word, new_pronunciations in pronunciations_to_i:
     pronunciations_unchanged = new_pronunciations is None
     if pronunciations_unchanged:
@@ -47,7 +46,7 @@ def sort_pronunciations(dictionary: PronunciationDict, descending: bool, ignore_
     dictionary[word] = new_pronunciations
     changed_counter += 1
 
-  return removed_words, changed_counter
+  return changed_counter
 
 
 process_lookup_dict: PronunciationDict = None

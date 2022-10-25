@@ -34,16 +34,16 @@ def sort_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bo
   if dictionary_instance is None:
     return False
 
-  new_dictionary = sort_pronunciations(
+  changed_counter = sort_pronunciations(
     dictionary_instance, ns.descending, ns.ignore_weight, mp_options)
 
-  changed_anything = new_dictionary is not None
+  changed_anything = changed_counter > 0
 
   if not changed_anything:
     logger.info("Didn't changed anything.")
     return True
 
-  success = try_save_dict(new_dictionary, ns.dictionary, ns.encoding, s_options, logger)
+  success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
     return False
 
