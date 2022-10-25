@@ -32,6 +32,8 @@ from pronunciation_dictionary_utils_cli.vocabulary_extraction import \
   get_vocabulary_extraction_parser
 from pronunciation_dictionary_utils_cli.vocabulary_remove_symbols import \
   get_vocabulary_remove_symbols_parser
+from pronunciation_dictionary_utils_cli.weights_normalization import \
+  get_weights_normalization_parser
 from pronunciation_dictionary_utils_cli.words_casing_adjustment import \
   get_words_casing_adjustment_parser
 from pronunciation_dictionary_utils_cli.words_remove_symbols import get_words_remove_symbols_parser
@@ -79,6 +81,7 @@ def get_parsers() -> Parsers:
      get_words_casing_adjustment_parser),
     ("sort-words", "sort dictionary after words", get_words_sorting_parser),
     ("sort-pronunciations", "sort dictionary pronunciations", get_pronunciations_sorting_parser),
+    ("normalize-weights", "normalize pronunciation weights for each word", get_weights_normalization_parser),
   )
 
 
