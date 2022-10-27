@@ -23,37 +23,53 @@ def merge_dictionaries(dictionary: PronunciationDict, other_dictionary: Pronunci
   if msg := validate_ratio(ratio):
     raise ValueError(f"Parameter 'ratio': {msg}")
 
+  changed_anything = False
   if mode == "add":
-    dictionary_add_new(dictionary, other_dictionary)
+    changed_anything = dictionary_add_new(dictionary, other_dictionary)
   elif mode == "replace":
-    dictionary_replace(dictionary, other_dictionary)
+    changed_anything = dictionary_replace(dictionary, other_dictionary)
   elif mode == "extend":
     assert ratio is not None
-    dictionary_extend(dictionary, other_dictionary, ratio)
+    changed_anything = dictionary_extend(dictionary, other_dictionary, ratio)
   else:
     assert False
+  return changed_anything
 
 
-def dictionary_replace(dictionary1: PronunciationDict, dictionary2: PronunciationDict) -> None:
-  dictionary1.update(dictionary2)
+def dictionary_replace(dictionary1: PronunciationDict, dictionary2: PronunciationDict) -> bool:
+  changed_anything = False
+  for key, value in dictionary2.items():
+    if key not in dictionary1:
+      changed_anything = True
+      dictionary1[key] = value
+    else:
+      if dictionary1[key] != value:
+        dictionary1[key] = value
+        changed_anything = True
+  return changed_anything
 
 
-def dictionary_add_new(dictionary1: PronunciationDict, dictionary2: PronunciationDict) -> None:
+def dictionary_add_new(dictionary1: PronunciationDict, dictionary2: PronunciationDict) -> bool:
   new_keys = OrderedSet(dictionary2.keys()).difference(dictionary1.keys())
   for key in new_keys:
     assert key not in dictionary1
     dictionary1[key] = dictionary2[key]
+  changed_anything = len(new_keys) > 0
+  return changed_anything
 
 
-def dictionary_extend(dictionary1: PronunciationDict, dictionary2: PronunciationDict, ratio: float) -> None:
+def dictionary_extend(dictionary1: PronunciationDict, dictionary2: PronunciationDict, ratio: float) -> bool:
   keys = OrderedSet(dictionary2.keys())
   same_keys = keys.intersection(dictionary1.keys())
   new_keys = keys.difference(dictionary1.keys())
 
+  changed_anything = False
   for key in same_keys:
     assert key in dictionary1
-    merge_pronunciations(dictionary1[key], dictionary2[key], ratio)
+    changed_anything |= merge_pronunciations(dictionary1[key], dictionary2[key], ratio)
 
   for key in new_keys:
     assert key not in dictionary1
     dictionary1[key] = dictionary2[key]
+  changed_anything |= len(new_keys) > 0
+  return changed_anything

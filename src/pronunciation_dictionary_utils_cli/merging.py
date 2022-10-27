@@ -45,6 +45,7 @@ def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) ->
 
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
+  changed_anything = False
   for dictionary in ns.dictionaries:
     dictionary_instance = try_load_dict(dictionary, ns.encoding, lp_options, mp_options, logger)
     if dictionary_instance is None:
@@ -53,8 +54,12 @@ def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) ->
       resulting_dictionary = dictionary_instance
       continue
 
-    merge_dictionaries(resulting_dictionary, dictionary_instance,
-                       ns.duplicate_handling, ns.ratio)
+    changed_anything |= merge_dictionaries(
+      resulting_dictionary, dictionary_instance, ns.duplicate_handling, ns.ratio)
+
+  if not changed_anything:
+    logger.info("Didn't changed anything.")
+    return True
 
   success = try_save_dict(resulting_dictionary, ns.output_dictionary,
                           ns.encoding, s_options, logger)
