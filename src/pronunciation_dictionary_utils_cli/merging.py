@@ -57,11 +57,10 @@ def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) ->
     logger.info("Didn't changed anything.")
     return True
 
-  output_path: Path = ns.dictionaries[0]
-  success = try_save_dict(resulting_dictionary, output_path,
+  success = try_save_dict(resulting_dictionary, ns.dictionary,
                           ns.encoding, s_options, logger)
   if not success:
     return False
 
-  logger.info(f"Written dictionary to: \"{output_path.absolute()}\".")
+  logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\".")
   return True
