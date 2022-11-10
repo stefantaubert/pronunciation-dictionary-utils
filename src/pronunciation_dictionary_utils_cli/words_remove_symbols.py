@@ -10,7 +10,7 @@ from pronunciation_dictionary_utils import remove_symbols_from_words
 from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
                                                                 add_io_group, add_mp_group,
                                                                 get_optional, parse_existing_file,
-                                                                parse_float_0_to_1, parse_path)
+                                                                parse_path)
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 
@@ -26,8 +26,6 @@ def get_words_remove_symbols_parser(parser: ArgumentParser):
                       help="mode to remove the symbols: all = on all locations; start = only from start; end = only from end; both = start + end", default="both")
   # parser.add_argument("--remove-empty", action="store_true",
   #                     help="if a pronunciation will be empty after removal, remove the corresponding word from the dictionary")
-  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1, metavar="RATIO",
-                      help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio)", default=0.5)
   parser.add_argument("-ro", "--removed-out", metavar="PATH", type=get_optional(parse_path),
                       help="write removed words to this file", default=default_removed_out)
   add_io_group(parser)
@@ -49,7 +47,7 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
     return False
 
   removed_words_entirely, removed_words = remove_symbols_from_words(
-    dictionary_instance, symbols_str, ns.mode, ns.ratio, mp_options)
+    dictionary_instance, symbols_str, ns.mode, mp_options)
 
   if len(removed_words) == 0:
     logger.info("Didn't changed anything.")

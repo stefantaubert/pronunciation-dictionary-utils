@@ -7,8 +7,7 @@ from ordered_set import OrderedSet
 from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations, Word
 from tqdm import tqdm
 
-from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
-                                                       validate_type)
+from pronunciation_dictionary_utils.validation import validate_dictionary, validate_mp_options
 
 
 def normalize_weights(dictionary: PronunciationDict, mp_options: MultiprocessingOptions) -> int:

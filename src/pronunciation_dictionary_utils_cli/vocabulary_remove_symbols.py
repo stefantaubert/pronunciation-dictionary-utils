@@ -11,7 +11,7 @@ from pronunciation_dictionary_utils.vocabulary_remove_symbols import remove_symb
 from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrderedSetAction,
                                                                 add_encoding_argument, add_mp_group,
                                                                 get_optional, parse_existing_file,
-                                                                parse_float_0_to_1, parse_path)
+                                                                parse_path)
 
 
 def get_vocabulary_remove_symbols_parser(parser: ArgumentParser):
@@ -25,8 +25,6 @@ def get_vocabulary_remove_symbols_parser(parser: ArgumentParser):
                       help="mode to remove the symbols: all = on all locations; start = only from start; end = only from end; both = start + end", default="both")
   # parser.add_argument("--remove-empty", action="store_true",
   #                     help="if a pronunciation will be empty after removal, remove the corresponding word from the dictionary")
-  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1, metavar="RATIO",
-                      help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio)", default=0.5)
   parser.add_argument("-ro", "--removed-out", metavar="PATH", type=get_optional(parse_path),
                       help="write removed words to this file", default=default_removed_out)
   add_encoding_argument(parser, "-e", "--encoding",

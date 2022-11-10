@@ -6,8 +6,7 @@ from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOpt
 
 from pronunciation_dictionary_utils import change_word_casing
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_io_group, add_mp_group,
-                                                                parse_existing_file,
-                                                                parse_float_0_to_1)
+                                                                parse_existing_file)
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 
@@ -15,10 +14,8 @@ def get_words_casing_adjustment_parser(parser: ArgumentParser):
   parser.description = "Adjust casing of words in dictionary."
   parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
-  parser.add_argument("-m", "--mode", metavar="MODE", type=str, choices=["lower", "upper"],
-                      help="mode to change the casing", default="lower")
-  parser.add_argument("-r", "--ratio", type=parse_float_0_to_1, metavar="RATIO",
-                      help="merge pronunciations weights with these ratio, i.e., existing weights * ratio + weights to merge * (1-ratio)", default=0.5)
+  parser.add_argument("mode", metavar="MODE", type=str, choices=["lower", "upper"],
+                      help="mode to change the casing")
   add_io_group(parser)
   add_mp_group(parser)
   return change_casing_ns
@@ -35,8 +32,7 @@ def change_casing_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   if dictionary_instance is None:
     return False
 
-  removed_words, created_words = change_word_casing(
-    dictionary_instance, ns.mode, ns.ratio, mp_options)
+  removed_words, created_words = change_word_casing(dictionary_instance, ns.mode, mp_options)
 
   if len(removed_words) == 0:
     logger.info("Didn't changed anything.")

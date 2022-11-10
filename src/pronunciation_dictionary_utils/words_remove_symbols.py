@@ -7,8 +7,7 @@ from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, 
 from tqdm import tqdm
 
 from pronunciation_dictionary_utils.common import merge_pronunciations
-from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
-                                                       validate_ratio)
+from pronunciation_dictionary_utils.validation import validate_dictionary, validate_mp_options
 
 
 def __validate_mode(mode: str) -> Optional[str]:
@@ -23,15 +22,13 @@ def __validate_symbols(symbols: str) -> Optional[str]:
   return None
 
 
-def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode: str, ratio: float, mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], OrderedSet[Word]]:
+def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode: str, mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], OrderedSet[Word]]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := __validate_symbols(symbols):
     raise ValueError(f"Parameter 'symbols': {msg}")
   if msg := __validate_mode(mode):
     raise ValueError(f"Parameter 'mode': {msg}")
-  if msg := validate_ratio(ratio):
-    raise ValueError(f"Parameter 'ratio': {msg}")
   if msg := validate_mp_options(mp_options):
     raise ValueError(f"Parameter 'mp_options': {msg}")
 
@@ -62,7 +59,7 @@ def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode:
       popped_pronunciations = dictionary.pop(word)
       if new_word in dictionary:
         existing_pronunciations = dictionary[new_word]
-        merge_pronunciations(existing_pronunciations, popped_pronunciations, ratio)
+        merge_pronunciations(existing_pronunciations, popped_pronunciations)
       else:
         if new_word == "":
           removed_words_entirely.add(word)

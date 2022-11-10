@@ -8,7 +8,7 @@ from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, 
 from tqdm import tqdm
 
 from pronunciation_dictionary_utils.common import merge_pronunciations
-from pronunciation_dictionary_utils.validation import validate_dictionary, validate_ratio
+from pronunciation_dictionary_utils.validation import validate_dictionary
 
 
 def __validate_mode(mode: str) -> Optional[str]:
@@ -17,13 +17,11 @@ def __validate_mode(mode: str) -> Optional[str]:
   return None
 
 
-def change_word_casing(dictionary: PronunciationDict, mode: str, ratio: float, mp_options: MultiprocessingOptions) -> int:
+def change_word_casing(dictionary: PronunciationDict, mode: str, mp_options: MultiprocessingOptions) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := __validate_mode(mode):
     raise ValueError(f"Parameter 'mode': {msg}")
-  if msg := validate_ratio(ratio):
-    raise ValueError(f"Parameter 'ratio': {msg}")
 
   process_method = partial(
     __process_change_casing,
@@ -51,7 +49,7 @@ def change_word_casing(dictionary: PronunciationDict, mode: str, ratio: float, m
     popped_pronunciations = dictionary.pop(word)
     if new_word in dictionary:
       existing_pronunciations = dictionary[new_word]
-      merge_pronunciations(existing_pronunciations, popped_pronunciations, ratio)
+      merge_pronunciations(existing_pronunciations, popped_pronunciations)
     else:
       created_words.add(new_word)
       dictionary[new_word] = popped_pronunciations

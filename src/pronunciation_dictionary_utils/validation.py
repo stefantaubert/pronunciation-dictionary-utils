@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from ordered_set import OrderedSet
 from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations, Word
@@ -48,6 +48,12 @@ def _validate_dictionary_deep(dictionary: PronunciationDict) -> Optional[str]:
 def validate_ratio(ratio: float) -> Optional[str]:
   if not 0 <= ratio <= 1:
     return "Value needs to be in interval [0, 1]!"
+  return None
+
+
+def validate_weights_format(weights_format: Literal["rel", "abs"]) -> Optional[str]:
+  if weights_format not in ("rel", "abs"):
+    return "Value needs to be 'rel' or 'abs'!"
   return None
 
 
