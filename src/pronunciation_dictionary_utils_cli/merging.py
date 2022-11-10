@@ -27,10 +27,6 @@ def get_merging_parser(parser: ArgumentParser):
 def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   assert len(ns.dictionaries) > 0
 
-  if ns.duplicate_handling == "extend" and ns.ratio is None:
-    logger.error("Parameter 'ratio' is required on extending!")
-    return False
-
   lp_options = DeserializationOptions(
       ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
   mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
