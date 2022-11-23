@@ -1,4 +1,5 @@
 import argparse
+import logging
 import platform
 import sys
 from argparse import ArgumentParser
@@ -44,18 +45,16 @@ __version__ = version(prog_name)
 
 INVOKE_HANDLER_VAR = "invoke_handler"
 
-CONSOLE_PNT_GREEN = "\x1b[1;49;32m"
-CONSOLE_PNT_RED = "\x1b[1;49;31m"
-CONSOLE_PNT_RST = "\x1b[0m"
-
-Parsers = Generator[Tuple[str, str, Callable], None, None]
+CONSOLE_PRINT_GREEN = "\x1b[1;49;32m"
+CONSOLE_PRINT_RED = "\x1b[1;49;31m"
+CONSOLE_PRINT_RESET = "\x1b[0m"
 
 
-def formatter(prog):
+def custom_formatter(prog):
   return argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40)
 
 
-def get_parsers() -> Parsers:
+def get_parsers() -> Generator[Tuple[str, str, Callable], None, None]:
   yield from (
     ("export-vocabulary", "export vocabulary from dictionaries",
      get_vocabulary_extraction_parser),
@@ -87,7 +86,7 @@ def get_parsers() -> Parsers:
 
 def _init_parser():
   main_parser = ArgumentParser(
-    formatter_class=formatter,
+    formatter_class=custom_formatter,
     description="This program provides methods to modify pronunciation dictionaries.",
   )
   main_parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
@@ -96,7 +95,7 @@ def _init_parser():
 
   for command, description, method in get_parsers():
     method_parser = subparsers.add_parser(
-      command, help=description, formatter_class=formatter)
+      command, help=description, formatter_class=custom_formatter)
     # init parser
     invoke_method = method(method_parser)
     method_parser.set_defaults(**{
@@ -138,9 +137,10 @@ def parse_args(args: List[str]) -> None:
   delattr(ns, INVOKE_HANDLER_VAR)
   log_to_file = ns.log is not None
   if log_to_file:
-    log_to_file = try_init_file_logger(ns.log, local_debugging or ns.debug)
-    if not log_to_file:
-      root_logger.warning("Logging to file is not possible.")
+    log_level = logging.DEBUG if (local_debugging or ns.debug) else logging.INFO
+    log_to_file_successful = try_init_file_logger(ns.log, log_level)
+    if not log_to_file_successful:
+      root_logger.warning("Logging to file is not possible!")
 
   flogger = get_file_logger()
   if not local_debugging:
@@ -160,12 +160,12 @@ def parse_args(args: List[str]) -> None:
   flogger.debug(f"Received arguments: {str(args)}")
   flogger.debug(f"Parsed arguments: {str(ns)}")
 
-  start = perf_counter()
+  start_time = perf_counter()
   cmd_flogger, cmd_logger = init_and_return_loggers(__name__)
   #success, changed_anything = invoke_handler(ns, cmd_logger, cmd_flogger)
   success = invoke_handler(ns, cmd_logger, cmd_flogger)
   if success:
-    root_logger.info(f"{CONSOLE_PNT_GREEN}Everything was successful!{CONSOLE_PNT_RST}")
+    root_logger.info(f"{CONSOLE_PRINT_GREEN}Everything was successful!{CONSOLE_PRINT_RESET}")
     flogger.info("Everything was successful!")
   else:
     if log_to_file:
@@ -174,8 +174,8 @@ def parse_args(args: List[str]) -> None:
       root_logger.error("Not everything was successful!")
     flogger.error("Not everything was successful!")
 
-  duration = perf_counter() - start
-  flogger.debug(f"Total duration (s): {duration}")
+  duration_s = perf_counter() - start_time
+  flogger.debug(f"Total duration (s): {duration_s}")
 
   if log_to_file:
     # path not encapsulated in "" because it is only console out
@@ -185,10 +185,6 @@ def parse_args(args: List[str]) -> None:
 def run():
   arguments = sys.argv[1:]
   parse_args(arguments)
-
-
-def run_prod():
-  run()
 
 
 def debug_file_exists():
@@ -201,6 +197,5 @@ def create_debug_file():
 
 
 if __name__ == "__main__":
-  # print_features()
   create_debug_file()
   run()

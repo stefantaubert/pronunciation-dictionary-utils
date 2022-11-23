@@ -36,7 +36,7 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
   if msg := validate_mp_options(mp_options):
     raise ValueError(f"Parameter 'mp_options': {msg}")
 
-  map_method = process_map_pronunciation_partial if partial_mapping else process_map_pronunciation_full
+  map_method = process_map_pronunciations_partial if partial_mapping else process_map_pronunciations_full
   process_method = partial(
     map_method,
     symbols=symbols,
@@ -45,7 +45,7 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
 
   with Pool(
     processes=mp_options.n_jobs,
-    initializer=__init_pool_prepare_cache_mp,
+    initializer=__init_pool,
     initargs=(dictionary,),
     maxtasksperchild=mp_options.maxtasksperchild,
   ) as pool:
@@ -64,69 +64,76 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
   return changed_counter
 
 
-process_lookup_dict: PronunciationDict = None
+PROCESS_LOOKUP_DICT: PronunciationDict = None
 
 
-def __init_pool_prepare_cache_mp(lookup_dict: PronunciationDict) -> None:
-  global process_lookup_dict
-  process_lookup_dict = lookup_dict
+def __init_pool(lookup_dict: PronunciationDict) -> None:
+  global PROCESS_LOOKUP_DICT
+  PROCESS_LOOKUP_DICT = lookup_dict
 
 
 def replace_str(s: str, replace: OrderedSet[str], replace_with: str) -> str:
-  for r in replace:
-    if r in s:
-      s = s.replace(r, replace_with)
+  for r_str in replace:
+    if r_str in s:
+      s = s.replace(r_str, replace_with)
   return s
 
 
-def process_map_pronunciation_partial(word: Word, symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Tuple[Word, Optional[Pronunciations]]:
-  global process_lookup_dict
-  assert word in process_lookup_dict
-  pronunciations = process_lookup_dict[word]
+def process_map_pronunciations_partial(word: Word, symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Tuple[Word, Optional[Pronunciations]]:
+  global PROCESS_LOOKUP_DICT
+  assert word in PROCESS_LOOKUP_DICT
+  pronunciations = PROCESS_LOOKUP_DICT[word]
+  new_pronunciations = map_pronunciations_partial(pronunciations, symbols, map_symbol)
+  if new_pronunciations == pronunciations:
+    del pronunciations
+    del new_pronunciations
+    return word, None
+  del pronunciations
+  return word, new_pronunciations
+
+
+def process_map_pronunciations_full(word: Word, symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Tuple[Word, Optional[Pronunciations]]:
+  global PROCESS_LOOKUP_DICT
+  assert word in PROCESS_LOOKUP_DICT
+  pronunciations = PROCESS_LOOKUP_DICT[word]
+  new_pronunciations = map_pronunciations_full(pronunciations, symbols, map_symbol)
+  if new_pronunciations == pronunciations:
+    del pronunciations
+    del new_pronunciations
+    return word, None
+  del pronunciations
+  return word, new_pronunciations
+
+
+def map_pronunciations_partial(pronunciations: Pronunciations, replace_symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Pronunciations:
   assert len(pronunciations) > 0
-  changed_anything = False
+  assert map_symbol != ""
   new_pronunciations = OrderedDict()
   for pronunciation, weight in pronunciations.items():
+    assert len(pronunciation) > 0
     new_pronunciation = tuple(
-      replace_str(symbol, symbols, map_symbol)
+      replace_str(symbol, replace_symbols, map_symbol)
       for symbol in pronunciation
     )
-
-    if new_pronunciation != pronunciation:
-      changed_anything = True
-
-    assert len(new_pronunciation) > 0
     if new_pronunciation in new_pronunciations:
       new_pronunciations[new_pronunciation] += weight
     else:
       new_pronunciations[new_pronunciation] = weight
-
-  if changed_anything:
-    return word, new_pronunciations
-  return word, None
+  return new_pronunciations
 
 
-def process_map_pronunciation_full(word: Word, symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Tuple[Word, Optional[Pronunciations]]:
-  global process_lookup_dict
-  assert word in process_lookup_dict
-  pronunciations = process_lookup_dict[word]
+def map_pronunciations_full(pronunciations: Pronunciations, replace_symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Pronunciations:
   assert len(pronunciations) > 0
-  changed_anything = False
+  assert map_symbol != ""
   new_pronunciations = OrderedDict()
   for pronunciation, weight in pronunciations.items():
+    assert len(pronunciation) > 0
     new_pronunciation = tuple(
-      map_symbol if symbol in symbols else symbol
+      map_symbol if symbol in replace_symbols else symbol
       for symbol in pronunciation
     )
-
-    if new_pronunciation != pronunciation:
-      changed_anything = True
-
-    assert len(new_pronunciation) > 0
     if new_pronunciation in new_pronunciations:
       new_pronunciations[new_pronunciation] += weight
     else:
       new_pronunciations[new_pronunciation] = weight
-  if changed_anything:
-    return word, new_pronunciations
-  return word, None
+  return new_pronunciations
