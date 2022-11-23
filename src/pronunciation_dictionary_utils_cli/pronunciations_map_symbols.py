@@ -9,7 +9,6 @@ from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrdered
                                                                 add_io_group, add_mp_group,
                                                                 parse_existing_file,
                                                                 parse_non_empty_or_whitespace)
-from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 DEFAULT_EMPTY_WEIGHT = 1.0
@@ -20,7 +19,7 @@ def get_pronunciations_map_symbols_parser(parser: ArgumentParser):
   parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
   parser.add_argument("from_symbols", type=parse_non_empty_or_whitespace, metavar='FROM-SYMBOL', nargs='+',
-                      help="map these symbols from the pronunciations to MAP_SYMBOL", action=ConvertToOrderedSetAction, default=DEFAULT_PUNCTUATION)
+                      help="map these symbols from the pronunciations to MAP_SYMBOL", action=ConvertToOrderedSetAction)
   parser.add_argument("to_symbol", type=parse_non_empty_or_whitespace,
                       metavar="TO-SYMBOL", help="this symbol will be taken")
   parser.add_argument("-pm", "--partial-mapping", action="store_true",
