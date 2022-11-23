@@ -13,12 +13,10 @@ readme = "README.md"
 requires-python = ">=3.6"
 license = {text = "MIT"}
 authors = [
-  {email = "stefan.taubert@posteo.me"},
-  {name = "Stefan Taubert"}
+  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"}
 ]
 maintainers = [
-  {email = "stefan.taubert@posteo.me"},
-  {name = "Stefan Taubert"}
+  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},
 ]
 keywords = [
   "ARPAbet",
@@ -42,16 +40,15 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.6",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
+  "pronunciation-dictionary >= 0.0.4",
+  "ordered-set >= 4.1.0",
   "tqdm",
-  "ordered-set >= 4.1.0"
 ]
 
 [project.urls]
@@ -79,11 +76,42 @@ log_level = "DEBUG"
 testpaths = [
   "src/pronunciation_dictionary_utils_tests",
 ]
+console_output_style = "count"
 
 [tool.autopep8]
 indent-size = 2
 ignore = ["E121"]
 max_line_length = 100
+
+[tool.pyright]
+root = ["src"]
+include = ["src"]
+pythonPlatform = "All"
+typeCheckingMode = "off"
+stubPath = ""
+exclude = [
+  "**/node_modules",
+  "**/__pycache__",
+  ".git",
+  "**/*.egg-info",
+  "**/*_debug",
+]
+useLibraryCodeForTypes = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{38,39,310}
+isolated_build = true
+
+[testenv]
+deps = 
+  pytest
+commands = 
+  pytest
+  dict-cli
+  dict-cli -v
+"""
 
 [tool.isort]
 line_length = 100

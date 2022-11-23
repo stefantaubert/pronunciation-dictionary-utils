@@ -49,19 +49,19 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
     initargs=(dictionary,),
     maxtasksperchild=mp_options.maxtasksperchild,
   ) as pool:
-    entries = OrderedSet(dictionary.keys())
-    iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    new_pronunciations_to_words = dict(tqdm(iterator, total=len(entries), unit="words"))
+    all_words = OrderedSet(dictionary.keys())
+    iterator = pool.imap(process_method, all_words, mp_options.chunksize)
+    new_pronunciations_to_words = dict(tqdm(iterator, total=len(all_words), unit="words"))
 
-  changed_counter = 0
+  changes_counter = 0
 
   for word, new_pronunciations in new_pronunciations_to_words.items():
-    changed_pronunciation = new_pronunciations is not None
-    if changed_pronunciation:
+    changed_pronunciations = new_pronunciations is not None
+    if changed_pronunciations:
       dictionary[word] = new_pronunciations
-      changed_counter += 1
+      changes_counter += 1
 
-  return changed_counter
+  return changes_counter
 
 
 PROCESS_LOOKUP_DICT: PronunciationDict = None

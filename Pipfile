@@ -13,7 +13,7 @@ rope = "*"
 pytest = "*"
 autoflake = "*"
 twine = "*"
-cx-freeze = "*"
+tox = "*"
 
 [packages]
 pronunciation-dictionary = ">=0.0.4"
