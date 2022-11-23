@@ -46,7 +46,7 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-  "pronunciation-dictionary >= 0.0.4",
+  "pronunciation-dictionary == 0.0.4",
   "ordered-set >= 4.1.0",
   "tqdm",
 ]
