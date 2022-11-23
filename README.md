@@ -42,6 +42,42 @@ pip install pronunciation-dictionary-utils --user
 dict-cli
 ```
 
+### Example
+
+```sh
+# Download CMU dictionary
+wget https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict \
+  -O "/tmp/example.dict"
+
+# Change formatting to remove numbers from words, comments and save as UTF-8
+dict-cli change-formatting \
+  "/tmp/example.dict" \
+  --deserialization-encoding "ISO-8859-1" \
+  --consider-numbers \
+  --consider-pronunciation-comments \
+  --serialization-encoding "UTF-8"
+
+# Export phoneme set
+dict-cli export-phonemes \
+  "/tmp/example.dict" \
+  "/tmp/example-phoneme-set.txt"
+  
+# Export vocabulary
+dict-cli export-vocabulary \
+  "/tmp/example.dict" \
+  "/tmp/example-vocabulary.txt"
+
+# Keep first pronunciation for each word and discard the rest
+dict-cli select-single-pronunciation \
+  "/tmp/example.dict" \
+  --mode "first"
+
+# Replace all "ER0" phonemes with "ER"
+dict-cli map-symbols-in-pronunciations \
+  "/tmp/example.dict" \
+  "ER0" "ER"
+```
+
 ## Running the tests
 
 ```sh
