@@ -12,7 +12,7 @@ from pronunciation_dictionary_utils_cli.argparse_helper import (ConvertToOrdered
 from pronunciation_dictionary_utils_cli.globals import DEFAULT_PUNCTUATION
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
-DEFAULT_EMPTY_WEIGHT = 1
+DEFAULT_EMPTY_WEIGHT = 1.0
 
 
 def get_pronunciations_map_symbols_parser(parser: ArgumentParser):
@@ -32,7 +32,7 @@ def get_pronunciations_map_symbols_parser(parser: ArgumentParser):
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
-      ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
+    ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
   mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
 
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
