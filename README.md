@@ -81,11 +81,20 @@ dict-cli map-symbols-in-pronunciations \
 ## Running the tests
 
 ```sh
-# setup
+# update
+sudo apt update
+# install Python 3.8
+sudo apt install python3-venv python3-pip python3.8 python3.8-dev python3.8-distutils
+# install pipenv for creation of virtual environments
+python3.8 -m pip install pipenv --user
+
+# check out repo
 git clone https://github.com/stefantaubert/pronunciation-dictionary-utils.git
 cd pronunciation-dictionary-utils
-pip install .
-pip install tox
+# create virtual environment
+python3.8 -m pipenv install --dev
+# activate environment
+pipenv shell
 # run tests
 tox
 ```
