@@ -109,6 +109,15 @@ pipenv shell
 tox
 ```
 
+Final lines of test result output:
+
+```log
+  py38: commands succeeded
+  py39: commands succeeded
+  py310: commands succeeded
+  congratulations :)
+```
+
 ## Acknowledgments
 
 Funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) – Project-ID 416228727 – CRC 1410
