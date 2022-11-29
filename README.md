@@ -85,8 +85,11 @@ dict-cli map-symbols-in-pronunciations \
 ```sh
 # update
 sudo apt update
-# install Python 3.8
-sudo apt install python3-venv python3-pip python3.8 python3.8-dev python3.8-distutils
+# install Python 3.8, 3.9 & 3.10 for ensuring that tests can be run
+sudo apt install python3-pip \
+  python3.8 python3.8-dev python3.8-distutils python3.8-venv \
+  python3.9 python3.9-dev python3.9-distutils python3.9-venv \
+  python3.10 python3.10-dev python3.10-distutils python3.10-venv
 # install pipenv for creation of virtual environments
 python3.8 -m pip install pipenv --user
 
@@ -104,7 +107,7 @@ python3.8 -m pipenv install --dev
 # then, navigate into the directory of the repo (if not already done)
 cd pronunciation-dictionary-utils
 # activate environment
-pipenv shell
+python3.8 -m pipenv shell
 # run tests
 tox
 ```
