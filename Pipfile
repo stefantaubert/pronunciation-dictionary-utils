@@ -14,9 +14,10 @@ pytest = "*"
 autoflake = "*"
 twine = "*"
 tox = "*"
+build = "*"
 
 [packages]
-pronunciation-dictionary = "== 0.0.4"
+pronunciation-dictionary = ">= 0.0.5"
 ordered-set = ">= 4.1.0"
 tqdm = "*"
 
