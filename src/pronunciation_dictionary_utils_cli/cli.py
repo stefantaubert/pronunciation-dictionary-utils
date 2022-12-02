@@ -54,17 +54,23 @@ def custom_formatter(prog):
   return argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40)
 
 
+def print_features():
+  parsers = get_parsers()
+  for command, description, method in parsers:
+    print(f"- `{command}`: {description}")
+
+
 def get_parsers() -> Generator[Tuple[str, str, Callable], None, None]:
   yield from (
     ("export-vocabulary", "export vocabulary from dictionaries",
      get_vocabulary_extraction_parser),
     ("export-phonemes", "export phoneme set from dictionaries",
      get_phoneme_set_extraction_parser),
-    ("merge", "merge dictionaries into one",
+    ("merge", "merge dictionaries together",
      get_merging_parser),
     ("extract", "extract subset of dictionary vocabulary",
      get_subset_extraction_parser),
-    ("map-symbols-in-pronunciations", "map phonemes/symbols in pronunciations to another phoneme/symbol",
+    ("map-symbols-in-pronunciations", "map phonemes/symbols in pronunciations to another phoneme/symbol, e.g., mapping ARPAbet to IPA",
      get_pronunciations_map_symbols_parser),
     ("remove-symbols-from-vocabulary", "remove phonemes/symbols from vocabulary",
      get_vocabulary_remove_symbols_parser),
@@ -197,5 +203,6 @@ def create_debug_file():
 
 
 if __name__ == "__main__":
-  create_debug_file()
+  # create_debug_file()
+  # print_features()
   run()
