@@ -39,7 +39,7 @@ def get_pronunciations_remove_symbols_parser(parser: ArgumentParser):
 
 def remove_symbols_from_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   if ns.keep_empty and ns.empty_symbol is None:
-    logger.error("An empty symbol needs to be supplied if keep_empty is true!")
+    logger.error("An empty symbol needs to be supplied if keep-empty is true!")
     return False
 
   lp_options = DeserializationOptions(
