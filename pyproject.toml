@@ -7,10 +7,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pronunciation-dictionary-utils"
-version = "0.0.1"
+version = "0.0.2"
 description = "CLI and library to modify pronunciation dictionaries (any language)."
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.8, <=3.11"
 license = {text = "MIT"}
 authors = [
   {name = "Stefan Taubert", email = "pypi@stefantaubert.com"}
@@ -43,10 +43,11 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-  "pronunciation-dictionary == 0.0.4",
+  "pronunciation-dictionary >= 0.0.5",
   "ordered-set >= 4.1.0",
   "tqdm",
 ]
@@ -101,7 +102,7 @@ useLibraryCodeForTypes = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{38,39,310}
+envlist = py{38,39,310,311}
 isolated_build = true
 
 [testenv]
@@ -120,4 +121,8 @@ known_first_party = [
   "pronunciation_dictionary_utils",
   "pronunciation_dictionary_utils_cli"
 ]
-known_third_party = ["ordered_set", "tqdm"]
+known_third_party = [
+  "pronunciation-dictionary", 
+  "ordered_set", 
+  "tqdm"
+]

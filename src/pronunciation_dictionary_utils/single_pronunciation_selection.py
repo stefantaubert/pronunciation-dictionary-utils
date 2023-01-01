@@ -6,9 +6,11 @@ from typing import Literal, Optional, Tuple
 from ordered_set import OrderedSet
 from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
                                       Word, get_first_pronunciation, get_last_pronunciation,
+                                      get_longest_pronunciation,
                                       get_pronunciation_with_highest_weight,
                                       get_pronunciation_with_lowest_weight,
-                                      get_random_pronunciation, get_weighted_pronunciation)
+                                      get_random_pronunciation, get_shortest_pronunciation,
+                                      get_weighted_pronunciation)
 from tqdm import tqdm
 
 from pronunciation_dictionary_utils.validation import (validate_dictionary, validate_mp_options,
@@ -21,6 +23,8 @@ SelectionMode = Literal[
   "last",
   "highest-weight",
   "lowest-weight",
+  "shortest",
+  "longest",
   "random",
   "weighted",
 ]
@@ -32,6 +36,8 @@ def __validate_mode(mode: str) -> Optional[str]:
     "last",
     "highest-weight",
     "lowest-weight",
+    "shortest",
+    "longest",
     "random",
     "weighted",
   ]:
@@ -97,6 +103,10 @@ def process_merge(word: Word, mode: SelectionMode, seed: Optional[int]) -> Tuple
     pronunciation = get_pronunciation_with_highest_weight(pronunciations)
   elif mode == "lowest-weight":
     pronunciation = get_pronunciation_with_lowest_weight(pronunciations)
+  elif mode == "shortest":
+    pronunciation = get_shortest_pronunciation(pronunciations)
+  elif mode == "longest":
+    pronunciation = get_longest_pronunciation(pronunciations)
   elif mode == "random":
     pronunciation = get_random_pronunciation(pronunciations, seed)
   elif mode == "weighted":

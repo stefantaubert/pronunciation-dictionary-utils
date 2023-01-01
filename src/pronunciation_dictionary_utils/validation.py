@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 from ordered_set import OrderedSet
 from pronunciation_dictionary import MultiprocessingOptions, PronunciationDict, Pronunciations, Word
@@ -26,35 +26,6 @@ def validate_vocabulary(vocabulary: OrderedSet[Word]) -> Optional[str]:
 
 def validate_dictionary(dictionary: PronunciationDict) -> Optional[str]:
   return validate_type(dictionary, OrderedDict)
-
-
-def _validate_dictionary_deep(dictionary: PronunciationDict) -> Optional[str]:
-  if not (isinstance(dictionary, OrderedDict)):
-    return "Type needs to be 'OrderedDict'!"
-  if len(dictionary) > 0:
-    for k1, v1 in dictionary.items():
-      if not isinstance(k1, str):
-        return "Keys need to be of type 'str'!"
-      if not isinstance(v1, OrderedDict):
-        return "Values need to be of type 'OrderedDict'!"
-      for k2, v2 in v1.items():
-        if not isinstance(k2, tuple):
-          return "Keys need to be of type 'tuple'!"
-        if not isinstance(v2, float):
-          return "Values need to be of type 'float'!"
-  return None
-
-
-def validate_ratio(ratio: float) -> Optional[str]:
-  if not 0 <= ratio <= 1:
-    return "Value needs to be in interval [0, 1]!"
-  return None
-
-
-def validate_weights_format(weights_format: Literal["rel", "abs"]) -> Optional[str]:
-  if weights_format not in ("rel", "abs"):
-    return "Value needs to be 'rel' or 'abs'!"
-  return None
 
 
 def validate_mp_options(mp_options: MultiprocessingOptions) -> Optional[str]:

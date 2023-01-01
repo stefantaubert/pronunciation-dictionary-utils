@@ -4,25 +4,26 @@
 [![PyPI](https://img.shields.io/pypi/pyversions/pronunciation-dictionary-utils.svg)](https://pypi.python.org/pypi/pronunciation-dictionary-utils)
 [![MIT](https://img.shields.io/github/license/stefantaubert/pronunciation-dictionary-utils.svg)](LICENSE)
 [![PyPI](https://img.shields.io/github/commits-since/stefantaubert/pronunciation-dictionary-utils/latest/master.svg)](https://pypi.python.org/pypi/pronunciation-dictionary-utils)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7129883.svg)](https://doi.org/10.5281/zenodo.7129883)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7390530.svg)](https://doi.org/10.5281/zenodo.7390530)
 
 Library and CLI to modify pronunciation dictionaries (any language).
 
 ## Features
 
-- Merge multiple pronunciation dictionaries into one
-- Extract subset of pronunciation dictionary
-- Remove characters from vocabulary
-- Remove phonemes from pronunciations
-- Map phonemes in pronunciations to different ones, e.g., mapping ARPAbet to IPA
-- Select single pronunciation per word
-- Change word casing
-- Change formatting
-- Export vocabulary
-- Export phoneme set
-- Sorting of words
-- Sorting of pronunciations
-- Normalization of pronunciation weights
+- `export-vocabulary`: export vocabulary from dictionaries
+- `export-phonemes`: export phoneme set from dictionaries
+- `merge`: merge dictionaries together
+- `extract`: extract subset of dictionary vocabulary
+- `map-symbols-in-pronunciations`: map phonemes/symbols in pronunciations to another phoneme/symbol, e.g., mapping ARPAbet to IPA
+- `remove-symbols-from-vocabulary`: remove phonemes/symbols from vocabulary
+- `remove-symbols-from-pronunciations`: remove phonemes/symbols from pronunciations
+- `remove-symbols-from-words`: remove characters/symbols from words
+- `change-formatting`: change formatting of dictionaries
+- `select-single-pronunciation`: select single pronunciation
+- `change-word-casing`: transform all words to upper- or lower-case
+- `sort-words`: sort dictionary after words
+- `sort-pronunciations`: sort dictionary pronunciations
+- `normalize-weights`: normalize pronunciation weights for each word
 
 ## Roadmap
 
@@ -85,11 +86,12 @@ dict-cli map-symbols-in-pronunciations \
 ```sh
 # update
 sudo apt update
-# install Python 3.8, 3.9 & 3.10 for ensuring that tests can be run
+# install Python 3.8, 3.9, 3.10 & 3.11 for ensuring that tests can be run
 sudo apt install python3-pip \
   python3.8 python3.8-dev python3.8-distutils python3.8-venv \
   python3.9 python3.9-dev python3.9-distutils python3.9-venv \
-  python3.10 python3.10-dev python3.10-distutils python3.10-venv
+  python3.10 python3.10-dev python3.10-distutils python3.10-venv \
+  python3.11 python3.11-dev python3.11-distutils python3.11-venv
 # install pipenv for creation of virtual environments
 python3.8 -m pip install pipenv --user
 
@@ -118,6 +120,7 @@ Final lines of test result output:
   py38: commands succeeded
   py39: commands succeeded
   py310: commands succeeded
+  py311: commands succeeded
   congratulations :)
 ```
 
