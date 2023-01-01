@@ -22,6 +22,9 @@ from pronunciation_dictionary_utils_cli.phoneme_set_extraction import \
   get_phoneme_set_extraction_parser
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols import \
   get_pronunciations_map_symbols_parser
+# nat: new functionality
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import \
+  get_pronunciations_map_symbols_json_parser
 from pronunciation_dictionary_utils_cli.pronunciations_remove_symbols import \
   get_pronunciations_remove_symbols_parser
 from pronunciation_dictionary_utils_cli.pronunciations_sorting import \
@@ -66,6 +69,9 @@ def get_parsers() -> Generator[Tuple[str, str, Callable], None, None]:
      get_subset_extraction_parser),
     ("map-symbols-in-pronunciations", "map phonemes/symbols in pronunciations to another phoneme/symbol",
      get_pronunciations_map_symbols_parser),
+    # nat: new functionality
+    ("map-symbols-in-pronunciations-json", "map phonemes/symbols in pronunciations to phoneme/symbol specified in file",
+     get_pronunciations_map_symbols_json_parser),
     ("remove-symbols-from-vocabulary", "remove phonemes/symbols from vocabulary",
      get_vocabulary_remove_symbols_parser),
     ("remove-symbols-from-pronunciations", "remove phonemes/symbols from pronunciations",
