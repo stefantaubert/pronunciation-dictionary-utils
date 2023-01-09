@@ -18,7 +18,7 @@ def test_component_change():
   dictionary["test"] = pronunciations
 
   __init_pool(dictionary)
-  word, new_pronunciations = process_map_pronunciations_full("test", OrderedSet(("e", "y")), "X")
+  word, new_pronunciations = process_map_pronunciations_full("test", OrderedSet(("e", "y")), ["X"])
 
   assert word == "test"
   assert new_pronunciations[tuple(("t", "X", "s", "t"))] == 15
@@ -33,7 +33,7 @@ def test_component_unchanged():
   dictionary["test"] = pronunciations
 
   __init_pool(dictionary)
-  word, new_pronunciations = process_map_pronunciations_full("test", OrderedSet(("X",)), "Y")
+  word, new_pronunciations = process_map_pronunciations_full("test", OrderedSet(("X",)), ["Y"])
 
   assert word == "test"
   assert new_pronunciations is None

@@ -6,10 +6,12 @@ from logging import Logger
 from ordered_set import OrderedSet  # instead of ConvertToOrderedSetAction
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       SerializationOptions)
+from tqdm import tqdm
 
 from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils_cli.argparse_helper import (  # ConvertToOrderedSetAction,
-  add_io_group, add_mp_group, parse_existing_file, parse_non_empty_or_whitespace)
+  add_encoding_argument, add_io_group, add_mp_group, parse_existing_file,
+  parse_non_empty_or_whitespace)
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 DEFAULT_EMPTY_WEIGHT = 1.0
@@ -28,6 +30,7 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   # additional option, partial mapping
   parser.add_argument("-pm", "--partial-mapping", action="store_true",
                       help="map symbols inside a symbol; useful when mapping the same vowel having different tones or stress within one operation")
+  add_encoding_argument(parser, "-me", "--mapping-encoding", "encoding of mapping")
   add_io_group(parser)  # argparse_helper.py, for modification of dictionary content
   add_mp_group(parser)  # argparse_helper.py, multiprocessing arguments
   return map_symbols_in_pronunciations_ns
@@ -46,7 +49,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     return False
 
   # loads the file with the mappings, saves it to an ordered dictionary
-  with open(ns.mapping, "r") as mapping_file:
+  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
     if mapping_file is None:  # no file
       return False
     mappings = json.load(mapping_file, object_pairs_hook=OrderedDict)
@@ -56,18 +59,22 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   # iterates through the dictionary keys, from last key to first (== longest mappings are dealt with first):
   # - loads a key as from_symbol and a value as to_symbol,
   # - maps each instance of the key (from_symbol) in the file to the value (to_symbol)
-  for key, mapping in mappings.items():
+  changed_words_total = set()
+  for key, mapping in tqdm(mappings.items(), total=len(mappings), desc="Mapping"):
+    to_phonemes = mapping.split(" ")
+    to_phonemes = [p for p in to_phonemes if len(p) > 0]
     from_symbol = parse_non_empty_or_whitespace(key)  # gets keys
     from_symbol = OrderedSet((from_symbol,))
     # changes symbols in dictionary_instance
-    changed_counter = map_symbols(
-      dictionary_instance, from_symbol, mapping, ns.partial_mapping, mp_options)
+    changed_words = map_symbols(
+      dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
+    changed_words_total |= changed_words
 
-  if changed_counter == 0:
+  if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
     return True
 
-  logger.info(f"Changed pronunciations of {changed_counter} word(s).")
+  logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
 
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from functools import partial
 from multiprocessing.pool import Pool
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from ordered_set import OrderedSet
 from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
@@ -19,7 +19,7 @@ def __validate_symbol(symbol: str) -> Optional[str]:
   return None
 
 
-def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_symbol: Symbol, partial_mapping: bool, mp_options: MultiprocessingOptions) -> int:
+def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, use_tqdm: bool = True) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(symbols, OrderedSet):
@@ -29,19 +29,34 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
       raise ValueError(f"Parameter 'symbols': {msg}")
   if len(symbols) == 0:
     raise ValueError("Parameter 'symbols': At least one symbol needs to be passed!")
-  if msg := __validate_symbol(map_symbol):
-    raise ValueError(f"Parameter 'map_symbol': {msg}")
+  if partial_mapping:
+    if msg := __validate_symbol(map_to):
+      raise ValueError(f"Parameter 'map_to': {msg}")
+  else:
+    if msg := validate_type(map_to, list):
+      raise ValueError(f"Parameter 'map_to': {msg}")
+    for symbol in map_to:
+      if msg := __validate_symbol(symbol):
+        raise ValueError(f"Parameter 'map_to': {msg}")
   if msg := validate_type(partial_mapping, bool):
     raise ValueError(f"Parameter 'partial_mapping': {msg}")
   if msg := validate_mp_options(mp_options):
     raise ValueError(f"Parameter 'mp_options': {msg}")
 
-  map_method = process_map_pronunciations_partial if partial_mapping else process_map_pronunciations_full
-  process_method = partial(
-    map_method,
-    symbols=symbols,
-    map_symbol=map_symbol,
-  )
+  if partial_mapping:
+    assert isinstance(map_to, str)
+    process_method = partial(
+      process_map_pronunciations_partial,
+      symbols=symbols,
+      map_symbol=map_to,
+    )
+  else:
+    assert isinstance(map_to, list)
+    process_method = partial(
+      process_map_pronunciations_full,
+      symbols=symbols,
+      mapping_symbols=map_to,
+    )
 
   with Pool(
     processes=mp_options.n_jobs,
@@ -51,17 +66,19 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
   ) as pool:
     all_words = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, all_words, mp_options.chunksize)
-    new_pronunciations_to_words = dict(tqdm(iterator, total=len(all_words), unit="words"))
+    if use_tqdm:
+      iterator = tqdm(iterator, total=len(all_words), unit="words")
+    new_pronunciations_to_words = dict(iterator)
 
-  changes_counter = 0
+  changed_words = set()
 
   for word, new_pronunciations in new_pronunciations_to_words.items():
     changed_pronunciations = new_pronunciations is not None
     if changed_pronunciations:
       dictionary[word] = new_pronunciations
-      changes_counter += 1
+      changed_words.add(word)
 
-  return changes_counter
+  return changed_words
 
 
 PROCESS_LOOKUP_DICT: PronunciationDict = None
@@ -92,11 +109,11 @@ def process_map_pronunciations_partial(word: Word, symbols: OrderedSet[Symbol], 
   return word, new_pronunciations
 
 
-def process_map_pronunciations_full(word: Word, symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Tuple[Word, Optional[Pronunciations]]:
+def process_map_pronunciations_full(word: Word, symbols: OrderedSet[Symbol], mapping_symbols: List[Symbol]) -> Tuple[Word, Optional[Pronunciations]]:
   global PROCESS_LOOKUP_DICT
   assert word in PROCESS_LOOKUP_DICT
   pronunciations = PROCESS_LOOKUP_DICT[word]
-  new_pronunciations = map_pronunciations_full(pronunciations, symbols, map_symbol)
+  new_pronunciations = map_pronunciations_full(pronunciations, symbols, mapping_symbols)
   if new_pronunciations == pronunciations:
     del pronunciations
     del new_pronunciations
@@ -122,16 +139,19 @@ def map_pronunciations_partial(pronunciations: Pronunciations, replace_symbols: 
   return new_pronunciations
 
 
-def map_pronunciations_full(pronunciations: Pronunciations, replace_symbols: OrderedSet[Symbol], map_symbol: Symbol) -> Pronunciations:
+def map_pronunciations_full(pronunciations: Pronunciations, replace_symbols: OrderedSet[Symbol], mapping_symbols: List[Symbol]) -> Pronunciations:
   assert len(pronunciations) > 0
-  assert map_symbol != ""
+  assert mapping_symbols != ""
   new_pronunciations = OrderedDict()
   for pronunciation, weight in pronunciations.items():
     assert len(pronunciation) > 0
-    new_pronunciation = tuple(
-      map_symbol if symbol in replace_symbols else symbol
-      for symbol in pronunciation
-    )
+    new_pronunciation = []
+    for symbol in pronunciation:
+      if symbol in replace_symbols:
+        new_pronunciation.extend(mapping_symbols)
+      else:
+        new_pronunciation.append(symbol)
+    new_pronunciation = tuple(new_pronunciation)
     if new_pronunciation in new_pronunciations:
       new_pronunciations[new_pronunciation] += weight
     else:

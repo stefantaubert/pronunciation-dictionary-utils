@@ -40,14 +40,14 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   if dictionary_instance is None:
     return False
 
-  changed_counter = map_symbols(
+  changed_words = map_symbols(
     dictionary_instance, ns.from_symbols, ns.to_symbol, ns.partial_mapping, mp_options)
 
-  if changed_counter == 0:
+  if len(changed_words) == 0:
     logger.info("Didn't changed anything.")
     return True
 
-  logger.info(f"Changed pronunciations of {changed_counter} word(s).")
+  logger.info(f"Changed pronunciations of {len(changed_words)} word(s).")
 
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
