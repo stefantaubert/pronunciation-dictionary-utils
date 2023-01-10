@@ -29,6 +29,8 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
       raise ValueError(f"Parameter 'symbols': {msg}")
   if len(symbols) == 0:
     raise ValueError("Parameter 'symbols': At least one symbol needs to be passed!")
+  if msg := validate_type(partial_mapping, bool):
+    raise ValueError(f"Parameter 'partial_mapping': {msg}")
   if partial_mapping:
     if msg := __validate_symbol(map_to):
       raise ValueError(f"Parameter 'map_to': {msg}")
@@ -38,8 +40,6 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
     for symbol in map_to:
       if msg := __validate_symbol(symbol):
         raise ValueError(f"Parameter 'map_to': {msg}")
-  if msg := validate_type(partial_mapping, bool):
-    raise ValueError(f"Parameter 'partial_mapping': {msg}")
   if msg := validate_mp_options(mp_options):
     raise ValueError(f"Parameter 'mp_options': {msg}")
 
