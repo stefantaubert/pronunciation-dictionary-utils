@@ -5,7 +5,7 @@ from logging import Logger
 
 from ordered_set import OrderedSet  # instead of ConvertToOrderedSetAction
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      SerializationOptions)
+                                      SerializationOptions, get_phoneme_set)
 from tqdm import tqdm
 
 from pronunciation_dictionary_utils import map_symbols
@@ -56,11 +56,22 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     if mappings is None:  # empty file
       return False
 
+  logger.info(f"Loaded mapping containing {len(mappings)} entries.")
+
+  dictionary_phonemes = get_phoneme_set(dictionary_instance)
+  common_keys = dictionary_phonemes.intersection(mappings)
+  dict_unmapped = dictionary_phonemes - mappings.keys()
+
+  logger.info(f"Found {len(common_keys)} applicable phoneme mappings.")
+  flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(common_keys))}")
+  flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(dict_unmapped))}")
+
   # iterates through the dictionary keys, from last key to first (== longest mappings are dealt with first):
   # - loads a key as from_symbol and a value as to_symbol,
   # - maps each instance of the key (from_symbol) in the file to the value (to_symbol)
   changed_words_total = set()
-  for key, mapping in tqdm(mappings.items(), total=len(mappings), desc="Mapping"):
+  for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
+    mapping = mappings[key]
     to_phonemes = mapping.split(" ")
     to_phonemes = [p for p in to_phonemes if len(p) > 0]
     from_symbol = parse_non_empty_or_whitespace(key)  # gets keys
