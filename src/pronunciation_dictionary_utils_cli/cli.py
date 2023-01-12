@@ -134,16 +134,17 @@ def parse_args(args: List[str]) -> None:
 
   try:
     ns = parser.parse_args(args)
-  except SystemExit:
-    # invalid command supplied
-    return
+  except SystemExit as error:
+    error_code = error.args[0]
+    # -v -> 0; invalid arg -> 2
+    sys.exit(error_code)
 
   if local_debugging:
     root_logger.debug(f"Parsed arguments: {str(ns)}")
 
   if not hasattr(ns, INVOKE_HANDLER_VAR):
     parser.print_help()
-    return
+    sys.exit(0)
 
   invoke_handler: Callable[..., bool] = getattr(ns, INVOKE_HANDLER_VAR)
   delattr(ns, INVOKE_HANDLER_VAR)
@@ -193,6 +194,9 @@ def parse_args(args: List[str]) -> None:
     # path not encapsulated in "" because it is only console out
     root_logger.info(f"Written log to: {ns.log.absolute()}")
 
+  if not success:
+    sys.exit(1)
+  sys.exit(0)
 
 def run():
   arguments = sys.argv[1:]
