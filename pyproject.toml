@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pronunciation-dictionary-utils"
-version = "0.0.2"
+version = "0.0.3"
 description = "CLI and library to modify pronunciation dictionaries (any language)."
 readme = "README.md"
 requires-python = ">=3.8, <=3.11"
@@ -63,10 +63,11 @@ dict-cli = "pronunciation_dictionary_utils_cli.cli:run"
 where = ["src"]
 include = [
   "pronunciation_dictionary_utils",
-  "pronunciation_dictionary_utils_cli"
+  "pronunciation_dictionary_utils_cli",
+  "pronunciation_dictionary_utils_tests",
+  "pronunciation_dictionary_utils_tests.*"
 ]
 exclude = [
-  "pronunciation_dictionary_utils_tests",
   "pronunciation_dictionary_utils_debug"
 ]
 namespaces = true
@@ -112,6 +113,7 @@ commands =
   pytest
   dict-cli
   dict-cli -v
+  dict-cli -h
 """
 
 [tool.isort]
