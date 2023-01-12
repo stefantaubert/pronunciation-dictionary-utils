@@ -144,11 +144,11 @@ tox
 Final lines of test result output:
 
 ```log
-  py38: commands succeeded
-  py39: commands succeeded
-  py310: commands succeeded
-  py311: commands succeeded
-  congratulations :)
+py38: commands succeeded
+py39: commands succeeded
+py310: commands succeeded
+py311: commands succeeded
+congratulations :)
 ```
 
 ## Acknowledgments
