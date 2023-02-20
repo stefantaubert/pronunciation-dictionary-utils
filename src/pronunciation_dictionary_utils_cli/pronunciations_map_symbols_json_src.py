@@ -1,23 +1,24 @@
-import json
-from argparse import ArgumentParser, Namespace
+# old version, will be deleted later
 
+import json  # handling json file
+from argparse import ArgumentParser, Namespace
+from collections import OrderedDict  # OrderedDict() for sorting mappings
 from logging import Logger
 
-from ordered_set import OrderedSet
+from ordered_set import OrderedSet  # instead of ConvertToOrderedSetAction
 from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
                                       SerializationOptions, get_phoneme_set)
-from tqdm import tqdm
+from tqdm import tqdm  # progress bars
 
 from pronunciation_dictionary_utils import map_symbols
-from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group, 
-  add_mp_group, parse_existing_file, parse_non_empty_or_whitespace)
+from pronunciation_dictionary_utils_cli.argparse_helper import (  # ConvertToOrderedSetAction,
+  add_encoding_argument, add_io_group, add_mp_group, parse_existing_file,
+  parse_non_empty_or_whitespace)
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 DEFAULT_EMPTY_WEIGHT = 1.0
 
 # arguments for the main function
-
-
 def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   parser.description = "Map symbols in pronunciations according to mappings in *.json file."
   # file to be changed
@@ -30,8 +31,8 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   parser.add_argument("-pm", "--partial-mapping", action="store_true",
                       help="map symbols inside a symbol; useful when mapping the same vowel having different tones or stress within one operation")
   add_encoding_argument(parser, "-me", "--mapping-encoding", "encoding of mapping")
-  add_io_group(parser)
-  add_mp_group(parser)
+  add_io_group(parser)  # argparse_helper.py, for modification of dictionary content
+  add_mp_group(parser)  # argparse_helper.py, multiprocessing arguments
   return map_symbols_in_pronunciations_ns
 
 
@@ -47,45 +48,38 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   if dictionary_instance is None:
     return False
 
-  # loads the file with the mappings, saves the mappings to a dictionary
+  # loads the file with the mappings, saves it to an ordered dictionary
   with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
     if mapping_file is None:  # no file
       return False
-    mappings = json.load(mapping_file)
+    mappings = json.load(mapping_file, object_pairs_hook=OrderedDict)
     if mappings is None:  # empty file
       return False
 
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
-  dictionary_phonemes = get_phoneme_set(dictionary_instance)  # unique sounds from the dictionary
-  common_keys = dictionary_phonemes.intersection(mappings)  # sounds that are both in the dictionary and the mapping file
-  dict_unmapped = dictionary_phonemes - mappings.keys()  # sounds that are in the dictionary but not in the mapping file
-
-  common_keys = sorted(common_keys, reverse=True, key=len)  # sorting common_keys in a descending order by length
+  dictionary_phonemes = get_phoneme_set(dictionary_instance)
+  common_keys = dictionary_phonemes.intersection(mappings)
+  dict_unmapped = dictionary_phonemes - mappings.keys()
 
   logger.info(f"Found {len(common_keys)} applicable phoneme mappings.")
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(common_keys))}")
   flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(dict_unmapped))}")
 
-  # iterates through common_keys:
-  # - loads a key as from_symbol and a value as to_phonemes,
-  # - maps each instance of the key (from_symbol) in the file to the value (to_phonemes)
+  # iterates through the dictionary keys, from last key to first (== longest mappings are dealt with first):
+  # - loads a key as from_symbol and a value as to_symbol,
+  # - maps each instance of the key (from_symbol) in the file to the value (to_symbol)
   changed_words_total = set()
-  if len(common_keys) > 0:
-    for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
-      # gets a value (mapping) to map the key to
-      mapping = mappings[key]
-      to_phonemes = mapping
-      #to_phonemes = mapping.split(" ")  # if incorrect or multiple values seperated by space passed -> split, creates a list
-      #to_phonemes = [p for p in to_phonemes if len(p) > 0]  # list comprehension
-      # gets a key
-      from_symbol = key
-      from_symbol = OrderedSet((from_symbol,))
-      # changes symbols in dictionary_instance
-      to_phonemes = to_phonemes if ns.partial_mapping else [to_phonemes]
-      changed_words = map_symbols(
-        dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
-      changed_words_total |= changed_words
+  for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
+    mapping = mappings[key]
+    to_phonemes = mapping.split(" ")
+    to_phonemes = [p for p in to_phonemes if len(p) > 0]
+    from_symbol = parse_non_empty_or_whitespace(key)  # gets keys
+    from_symbol = OrderedSet((from_symbol,))
+    # changes symbols in dictionary_instance
+    changed_words = map_symbols(
+      dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
+    changed_words_total |= changed_words
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
@@ -100,14 +94,3 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
 
   return True
-
-# cd ~/pronunciation-dictionary-utils
-# python3.8 -m pipenv shell
-# dict-cli map-symbols-in-pronunciations-json "/tmp/example.dict" "/tmp/mapping.json"
-# dict-cli map-symbols-in-pronunciations "/tmp/example.dict" "A" "LLLL" -pm
-# exit
-# cat /tmp/pronunciation-dictionary-utils.log
-# cd /tmp
-# cp /tmp/example_short.dict /tmp/example.dict
-
-# TODO to_phonemes, testing file
