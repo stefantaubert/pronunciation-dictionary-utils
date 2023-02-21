@@ -76,7 +76,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       # gets a value (mapping) to map the key to
       mapping = mappings[key]
       to_phonemes = mapping
-      #to_phonemes = mapping.split(" ")  # if incorrect or multiple values seperated by space passed -> split, creates a list
+      #to_phonemes = mapping.split(" ")  # if values seperated by space passed -> split, creates a list
       #to_phonemes = [p for p in to_phonemes if len(p) > 0]  # list comprehension
       # gets a key
       from_symbol = key
@@ -91,12 +91,11 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     logger.info("Didn't change anything.")
     return True
 
-  logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
-
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
     return False
 
+  logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
 
   return True
