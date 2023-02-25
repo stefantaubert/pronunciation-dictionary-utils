@@ -76,15 +76,23 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       # gets a value (mapping) to map the key to
       mapping = mappings[key]
       to_phonemes = mapping
-      #to_phonemes = mapping.split(" ")  # if values seperated by space passed -> split, creates a list
-      #to_phonemes = [p for p in to_phonemes if len(p) > 0]  # list comprehension
+      to_phonemes = mapping.split(" ")  # if values seperated by space passed -> split, creates a list
+      to_phonemes = [p for p in to_phonemes if len(p) > 0]
       # gets a key
       from_symbol = key
       from_symbol = OrderedSet((from_symbol,))
       # changes symbols in dictionary_instance
-      to_phonemes = to_phonemes if ns.partial_mapping else [to_phonemes]
-      changed_words = map_symbols(
-        dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
+      if ns.partial_mapping:
+        phoneme = ""
+        if len(to_phonemes) == 1:  # values with no whitespaces
+          phoneme = to_phonemes[0]
+        else:  # values with whitespaces
+          phoneme = " "  # whitespaces not supported with partial mapping -> meant to throw an error
+        changed_words = map_symbols(
+          dictionary_instance, from_symbol, phoneme, ns.partial_mapping, mp_options, use_tqdm=False)
+      else:
+        changed_words = map_symbols(
+          dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
       changed_words_total |= changed_words
 
   if len(changed_words_total) == 0:
@@ -109,4 +117,4 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 # cd /tmp
 # cp /tmp/example_short.dict /tmp/example.dict
 
-# TODO to_phonemes, testing file
+# TODO testing file
