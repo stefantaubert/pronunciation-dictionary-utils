@@ -82,15 +82,15 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       from_symbol = key
       from_symbol = OrderedSet((from_symbol,))
       # changes symbols in dictionary_instance
-      if ns.partial_mapping:
+      if ns.partial_mapping:  # with partial method
         phoneme = ""
-        if len(to_phonemes) == 1:  # values with no whitespaces
+        if len(to_phonemes) == 1:  # values with no whitespaces -> changes
           phoneme = to_phonemes[0]
-        else:  # values with whitespaces
-          phoneme = " "  # whitespaces not supported with partial mapping -> meant to throw an error
+        else:  # values with whitespaces -> throws an error
+          phoneme = " "
         changed_words = map_symbols(
           dictionary_instance, from_symbol, phoneme, ns.partial_mapping, mp_options, use_tqdm=False)
-      else:
+      else:  # without partial method
         changed_words = map_symbols(
           dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
       changed_words_total |= changed_words
@@ -105,16 +105,5 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 
   logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
-
+  
   return True
-
-# cd ~/pronunciation-dictionary-utils
-# python3.8 -m pipenv shell
-# dict-cli map-symbols-in-pronunciations-json "/tmp/example.dict" "/tmp/mapping.json"
-# dict-cli map-symbols-in-pronunciations "/tmp/example.dict" "A" "LLLL" -pm
-# exit
-# cat /tmp/pronunciation-dictionary-utils.log
-# cd /tmp
-# cp /tmp/example_short.dict /tmp/example.dict
-
-# TODO testing file
