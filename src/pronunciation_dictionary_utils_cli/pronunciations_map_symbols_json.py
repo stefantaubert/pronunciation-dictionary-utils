@@ -71,29 +71,22 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   # - loads a key as from_symbol and a value as to_phonemes,
   # - maps each instance of the key (from_symbol) in the file to the value (to_phonemes)
   changed_words_total = set()
-  if len(common_keys) > 0:
-    for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
-      # gets a value (mapping) to map the key to
-      mapping = mappings[key]
-      to_phonemes = mapping
-      to_phonemes = mapping.split(" ")  # if values seperated by space passed -> split, creates a list
+  for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
+    # gets a value (mapping) to map the key to
+    mapping = mappings[key]
+    to_phonemes = mapping
+    # gets a key
+    from_symbol = key
+    from_symbol = OrderedSet((from_symbol,))
+    # changes symbols in dictionary_instance. If whitespaces: 
+    # - without partial method, values are split at whitespaces and appear in the final version
+    # - with partial method, an error is thrown because it is not be meant to be supported
+    if ns.partial_mapping is False:
+      to_phonemes = mapping.split(" ")
       to_phonemes = [p for p in to_phonemes if len(p) > 0]
-      # gets a key
-      from_symbol = key
-      from_symbol = OrderedSet((from_symbol,))
-      # changes symbols in dictionary_instance
-      if ns.partial_mapping:  # with partial method
-        phoneme = ""
-        if len(to_phonemes) == 1:  # values with no whitespaces -> changes
-          phoneme = to_phonemes[0]
-        else:  # values with whitespaces -> throws an error
-          phoneme = " "
-        changed_words = map_symbols(
-          dictionary_instance, from_symbol, phoneme, ns.partial_mapping, mp_options, use_tqdm=False)
-      else:  # without partial method
-        changed_words = map_symbols(
-          dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
-      changed_words_total |= changed_words
+    changed_words = map_symbols(
+      dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
+    changed_words_total |= changed_words
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
