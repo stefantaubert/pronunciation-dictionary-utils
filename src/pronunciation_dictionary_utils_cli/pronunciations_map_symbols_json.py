@@ -84,6 +84,8 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     if ns.partial_mapping is False:
       to_phonemes = mapping.split(" ")
       to_phonemes = [p for p in to_phonemes if len(p) > 0]
+    if ns.partial_mapping is True and " " in to_phonemes:
+        raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
     changed_words = map_symbols(
       dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
     changed_words_total |= changed_words
