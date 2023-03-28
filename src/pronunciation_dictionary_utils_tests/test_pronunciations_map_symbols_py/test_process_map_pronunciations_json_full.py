@@ -16,7 +16,7 @@ map_path = 'src/pronunciation_dictionary_utils_tests/test_pronunciations_map_sym
 def create_test_files():
     # dictionary file
     dict_file = open(dict_path, 'w')
-    dict_file.write("test  AO AO2 AA1 EY2 .")
+    dict_file.write("test  AO AO2 AO3 AA1 EY2 .")
     dict_file.close()
     # mapping file
     map_file = open(map_path, 'w')
@@ -42,7 +42,7 @@ def run_commands():
 def compare_outputs():
     with open(dict_path, 'w') as outfile:
         outfile.seek(0)
-        output_expected = "test  ɔ ˌɔ AA1 ˌeɪ .\n"
+        output_expected = "test  ɔ ˌɔ AO3 AA1 ˌeɪ .\n"
         output_is = outfile.read()
         # Are the expected and actual outputs not empty?
         assert output_expected is not None, f"Expected output is empty"
