@@ -68,27 +68,22 @@ def test_pronunciations_map_symbols_py():
 
     changed_words = map_test_data(dictionary, mappings, partial_mapping)
 
-    # to validate the processed objects
-    # expected_result["test"] = "ɔ ˌɔ AO3 AA1 ˌeɪ ."
-    expected_result = {
-       "test":  "ɔ ˌɔ AO3 AA1 ˌeɪ .\n"
-    } # from "A0", "AO2", "AO3", "AA1", "EY2", "."
+    # validates the processed objects
 
-    # Are the expected and actual dictionaries not empty?
-    assert expected_result, f"Expected dictionary is empty"
+    # Does the dictionary with changed pronunciations exist?
     assert dictionary, f"Processed dictionary is empty"
-    # Are the expected and actual dictionaries of type dict?
-    assert isinstance(expected_result, dict), f"Expected dictionary is not of type dict"
-    assert isinstance(dictionary, dict), f"Processed dictionary is not of type dict"
-    print("Expected: ", expected_result)
-    print("Is: ", dictionary)
-    # Have any values been changed?
+
+    # Have any pronunciations in the dictionary changed?
     assert changed_words, f"No words have been changed"
     assert "test" in changed_words, f"Expected word is not among the words that have been changed"
-    # Are only expected symbols present in dictionary with changed words?
-    expected_symbols = set(['.', '1', '3', 'A', 'O', 'e', 'ɔ', 'ɪ', 'ˌ'])
-    for word, pronunciation in dictionary.items():
-        for symbol in pronunciation.keys():
-            assert all(s in expected_symbols for s in symbol), f"{pronunciation} contains unexpected symbols {symbol} in {word}"
-    # Are the expected and actual dictionaries equal?
-    assert(dictionary == expected_result), f"Expected and processed dictionaries aren't equal"
+
+    # Are only expected symbols present in pronunciations?
+    #expected_symbols = set(["ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."])
+    expected_pronunciation = tuple(['ɔ', 'ˌɔ', 'AO3', 'AA1', 'ˌeɪ', '.'])
+    for word in dictionary:
+        for pronunciation in dictionary[word]:
+            #offending_symbols = [s for s in pronunciation if s not in expected_symbols]
+            offending_symbols = [s for s in pronunciation if s not in expected_pronunciation]
+            assert not offending_symbols, f"Unexpected symbol(s) found in {word}: {', '.join(offending_symbols)}"
+            # Are pronunciations in the dictionary as expected?
+            assert pronunciation == expected_pronunciation, f"Expected {expected_pronunciation} as pronunciation, not {pronunciation}"
