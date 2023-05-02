@@ -1,3 +1,5 @@
+from typing import Tuple, Dict, Set
+
 from collections import OrderedDict
 from ordered_set import OrderedSet
 
@@ -7,7 +9,7 @@ from pronunciation_dictionary import (PronunciationDict, get_phoneme_set)
 from pronunciation_dictionary_utils.pronunciations_map_symbols import (
   __init_pool, process_map_pronunciations_full, map_pronunciations_partial)
 
-def create_test_data(partial_mapping: bool) -> tuple[PronunciationDict, dict[str,str], bool]:
+def create_test_data(partial_mapping: bool) -> Tuple[PronunciationDict, Dict[str, str], bool]:
   dictionary = OrderedDict()
   pronunciations = OrderedDict()
   pronunciations[tuple(("AO", "AO2", "AO3", "AA1", "EY2", "."))] = 1
@@ -33,7 +35,7 @@ def create_test_data(partial_mapping: bool) -> tuple[PronunciationDict, dict[str
   }
   return dictionary, mappings, partial_mapping
 
-def map_test_data(dictionary: PronunciationDict, mappings: dict[str, str], partial_mapping: bool) -> set[str]:
+def map_test_data(dictionary: PronunciationDict, mappings: Dict[str, str], partial_mapping: bool) -> Set[str]:
 
   dictionary_phonemes = get_phoneme_set(dictionary)  # unique sounds from the dictionary
   common_keys = dictionary_phonemes.intersection(mappings)  # sounds that are both in the dictionary and the mapping file
