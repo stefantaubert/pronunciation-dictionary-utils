@@ -5,14 +5,22 @@ from pronunciation_dictionary import (PronunciationDict, get_phoneme_set)
 
 #from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils.pronunciations_map_symbols import (
-  __init_pool, process_map_pronunciations_full)
+  __init_pool, process_map_pronunciations_full, map_pronunciations_partial)
 
 def create_test_data(partial_mapping: bool) -> tuple[PronunciationDict, dict[str,str], bool]:
   dictionary = OrderedDict()
   pronunciations = OrderedDict()
-  # pronunciations["test"] = "A0 AO2 AO3 AA1 EY2 ."
   pronunciations[tuple(("AO", "AO2", "AO3", "AA1", "EY2", "."))] = 1
   dictionary["test"] = pronunciations
+  '''
+  dictionary = {
+    "test": {
+      "pronunciations": {
+        ("AO", "AO2", "AO3", "AA1", "EY2", "."): 1
+      }
+    }
+  }
+  '''
   mappings = {
     "AO": "ɔ",
     "AO0": "ɔ",
@@ -54,11 +62,16 @@ def map_test_data(dictionary: PronunciationDict, mappings: dict[str, str], parti
     if partial_mapping is True and " " in to_phonemes:
         raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
     
-    #__init_pool(dictionary)
+    __init_pool(dictionary)
     print("from_symbol: ", from_symbol)
     print("to_phonemes: ", to_phonemes)
-    word, new_pronunciations = process_map_pronunciations_full("test", from_symbol, to_phonemes)
-    words_with_changed_pronunciations.add(word)
+    if partial_mapping is True:
+       word, new_pronunciations = map_pronunciations_partial("test", from_symbol, to_phonemes)
+    else:
+       word, new_pronunciations = process_map_pronunciations_full("test", from_symbol, to_phonemes)
+    if new_pronunciations:
+      dictionary[word] = new_pronunciations
+      words_with_changed_pronunciations.add(word)
 
   return words_with_changed_pronunciations
 
@@ -66,23 +79,24 @@ def map_test_data(dictionary: PronunciationDict, mappings: dict[str, str], parti
 def test_pronunciations_map_symbols_py():
     dictionary, mappings, partial_mapping = create_test_data(False)
 
-    changed_words = map_test_data(dictionary, mappings, partial_mapping)
+    words_with_changed_pronunciation = map_test_data(dictionary, mappings, partial_mapping)
 
     # validates the processed objects
 
     # Does the dictionary with changed pronunciations exist?
     assert dictionary, f"Processed dictionary is empty"
 
+    # Is there at least one pronunciation present?
+    #assert len(dictionary["test"]["pronunciations"].keys()) > 0
+
     # Have any pronunciations in the dictionary changed?
-    assert changed_words, f"No words have been changed"
-    assert "test" in changed_words, f"Expected word is not among the words that have been changed"
+    assert words_with_changed_pronunciation, f"No words have been changed"
+    assert "test" in words_with_changed_pronunciation, f"Expected word is not among the words that have been changed"
 
     # Are only expected symbols present in pronunciations?
-    #expected_symbols = set(["ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."])
     expected_pronunciation = tuple(['ɔ', 'ˌɔ', 'AO3', 'AA1', 'ˌeɪ', '.'])
     for word in dictionary:
         for pronunciation in dictionary[word]:
-            #offending_symbols = [s for s in pronunciation if s not in expected_symbols]
             offending_symbols = [s for s in pronunciation if s not in expected_pronunciation]
             assert not offending_symbols, f"Unexpected symbol(s) found in {word}: {', '.join(offending_symbols)}"
             # Are pronunciations in the dictionary as expected?
