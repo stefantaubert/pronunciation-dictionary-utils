@@ -85,11 +85,12 @@ def test_pronunciations_map_symbols_json_changed_without_partial():
 
     # Does the dictionary with changed pronunciations exist and is not empty?
     assert dictionary, f"Processed dictionary does not exist"
-    assert "test" in dictionary, f"Processed dictionary does not have any keys"
+    assert len(dictionary) == 1, f"Processed dictionary has less or more items than expected"
+    assert "test" in dictionary, f"Processed dictionary is missing the expected items"
     assert len(dictionary["test"].items()) > 0, f"No pronunciations in dictionary"
 
     # Have any pronunciations in the dictionary changed?
-    assert words_with_changed_pronunciation, f"No words have been changed"
+    assert len(words_with_changed_pronunciation) > 0, f"No words have been changed"
     assert "test" in words_with_changed_pronunciation, f"Expected word is not among the words that have been changed"
 
     # Are only expected symbols present in pronunciations?
@@ -110,11 +111,12 @@ def test_pronunciations_map_symbols_json_with_partial():
 
     # Does the dictionary with changed pronunciations exist and is not empty?
     assert dictionary, f"Processed dictionary does not exist"
-    assert "test" in dictionary, f"Processed dictionary does not have any keys"
+    assert len(dictionary) == 1, f"Processed dictionary has less or more items than expected"
+    assert "test" in dictionary, f"Processed dictionary is missing the expected items"
     assert len(dictionary["test"].items()) > 0, f"No pronunciations in dictionary"
 
     # Have any pronunciations in the dictionary changed?
-    assert words_with_changed_pronunciation, f"Pronunciations of no words have been changed"
+    assert len(words_with_changed_pronunciation) > 0, f"No words have been changed"
     assert "test" in words_with_changed_pronunciation, f"Expected word is not among words which pronunciation have changed"
 
     # Are only expected symbols present in pronunciations?
