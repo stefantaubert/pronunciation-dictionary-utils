@@ -1,5 +1,4 @@
 import json
-from typing import Dict, List, Tuple
 from argparse import ArgumentParser, Namespace
 
 from logging import Logger
@@ -35,30 +34,19 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
-def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[list, list]:
-  dictionary_unique_sounds = get_phoneme_set(dictionary)
-  
-  # sounds that are both in the dictionary and the mapping file
-  mappable_symbols = dictionary_unique_sounds.intersection(mappings)
-  mappable_symbols = sorted(mappable_symbols, reverse=True, key=len)
-  
-  # sounds that are in the dictionary but not in the mapping file
-  unmappable_symbols = dictionary_unique_sounds - mappings.keys()
-  unmappable_symbols = sorted(unmappable_symbols, reverse=True, key=len)
-
-  return mappable_symbols, unmappable_symbols
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
     ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
   mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
+
   s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
 
   # loads the file to be changed
   dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
   if dictionary_instance is None:
     return False
-  
+
   # loads the file with the mappings, saves the mappings to a dictionary
   with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
     if mapping_file is None:  # no file
@@ -69,18 +57,21 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
-  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(dictionary_instance, mappings)
+  dictionary_phonemes = get_phoneme_set(dictionary_instance)  # unique sounds from the dictionary
+  common_keys = dictionary_phonemes.intersection(mappings)  # sounds that are both in the dictionary and the mapping file
+  dict_unmapped = dictionary_phonemes - mappings.keys()  # sounds that are in the dictionary but not in the mapping file
 
-  logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
-  flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
-  flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
+  common_keys = sorted(common_keys, reverse=True, key=len)  # sorting common_keys in a descending order by length
 
-  # iterates through mappable_symbols:
+  logger.info(f"Found {len(common_keys)} applicable phoneme mappings.")
+  flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(common_keys))}")
+  flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(dict_unmapped))}")
+
+  # iterates through common_keys:
   # - loads a key as from_symbol and a value as to_phonemes,
   # - maps each instance of the key (from_symbol) in the file to the value (to_phonemes)
   changed_words_total = set()
-
-  for key in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+  for key in tqdm(common_keys, total=len(common_keys), desc="Mapping"):
     # gets a value (mapping) to map the key to
     mapping = mappings[key]
     to_phonemes = mapping
@@ -95,7 +86,6 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       to_phonemes = [p for p in to_phonemes if len(p) > 0]
     if ns.partial_mapping is True and " " in to_phonemes:
         raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
-    
     changed_words = map_symbols(
       dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
     changed_words_total |= changed_words
