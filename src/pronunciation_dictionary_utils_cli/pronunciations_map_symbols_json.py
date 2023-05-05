@@ -14,6 +14,9 @@ from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_arg
   add_mp_group, parse_existing_file, parse_non_empty_or_whitespace)
 from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
+from pronunciation_dictionary_utils.pronunciations_map_symbols import (
+  __init_pool, process_map_pronunciations_full, process_map_pronunciations_partial)
+
 DEFAULT_EMPTY_WEIGHT = 1.0
 
 # arguments for the main function
@@ -44,9 +47,40 @@ def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Di
   
   # sounds that are in the dictionary but not in the mapping file
   unmappable_symbols = dictionary_unique_sounds - mappings.keys()
-  unmappable_symbols = sorted(unmappable_symbols, reverse=True, key=len)
 
   return mappable_symbols, unmappable_symbols
+
+def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=None, mp_options=None, testing=False) -> set():
+  # prepares the mappable symbol
+  from_symbol = mappable_symbol
+  from_symbol = OrderedSet((from_symbol,))
+
+  # prepates the mapping
+  # gets a mapping (value in dictionary mappings for key mappable_symbol) to map the mappable symbol to
+  mapping = mappings[mappable_symbol]
+  to_phonemes = mapping
+  if partial_mapping is False:
+    to_phonemes = mapping.split(" ")  # allows whitespaces
+    to_phonemes = [p for p in to_phonemes if len(p) > 0]
+  if partial_mapping is True and " " in to_phonemes:
+      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
+  
+  # maps the mappable symbol to the mapping
+  if not testing:
+    changed_words = map_symbols(
+      dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
+  else:
+    __init_pool(dictionary)
+    if partial_mapping is True:
+       word, new_pronunciations = process_map_pronunciations_partial("test", from_symbol, to_phonemes)
+    else:
+       word, new_pronunciations = process_map_pronunciations_full("test", from_symbol, to_phonemes)
+    if new_pronunciations:
+      dictionary[word] = new_pronunciations
+      changed_words.add(word)
+
+  return changed_words
+
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
@@ -75,30 +109,13 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
   flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
-  # iterates through mappable_symbols:
-  # - loads a key as from_symbol and a value as to_phonemes,
-  # - maps each instance of the key (from_symbol) in the file to the value (to_phonemes)
+  # mapping all mappable symbols in the dictionary
   changed_words_total = set()
-
-  for key in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
-    # gets a value (mapping) to map the key to
-    mapping = mappings[key]
-    to_phonemes = mapping
-    # gets a key
-    from_symbol = key
-    from_symbol = OrderedSet((from_symbol,))
-    # changes symbols in dictionary_instance. If whitespaces: 
-    # - without partial method, values are split at whitespaces and appear in the final version
-    # - with partial method, an error is thrown because it is not be meant to be supported
-    if ns.partial_mapping is False:
-      to_phonemes = mapping.split(" ")
-      to_phonemes = [p for p in to_phonemes if len(p) > 0]
-    if ns.partial_mapping is True and " " in to_phonemes:
-        raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
-    
-    changed_words = map_symbols(
-      dictionary_instance, from_symbol, to_phonemes, ns.partial_mapping, mp_options, use_tqdm=False)
+  for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+    changed_words = process_mappable_symbol(dictionary_instance, mappings, mappable_symbol, ns.partial_mapping, mp_options)
     changed_words_total |= changed_words
+
+  # TODO test with no changes
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
@@ -107,6 +124,8 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
     return False
+
+  # TODO check these numbers
 
   logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
