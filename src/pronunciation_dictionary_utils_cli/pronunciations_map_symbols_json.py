@@ -55,7 +55,7 @@ def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mappi
   from_symbol = mappable_symbol
   from_symbol = OrderedSet((from_symbol,))
 
-  # prepates the mapping
+  # prepares the mapping
   # gets a mapping (value in dictionary mappings for key mappable_symbol) to map the mappable symbol to
   mapping = mappings[mappable_symbol]
   to_phonemes = mapping
