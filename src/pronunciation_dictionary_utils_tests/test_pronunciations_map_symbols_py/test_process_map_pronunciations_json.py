@@ -1,33 +1,14 @@
 from collections import OrderedDict
 
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (
+    get_mappable_and_unmappable_symbols, process_mappable_symbol)
+
 # Creates testing data
 
-dictionary = OrderedDict([('test', OrderedDict([
+test_dictionary = OrderedDict([('test', OrderedDict([
                                    (('AO', 'AO2', 'AO3', 'AA1', 'EY2', '.'), 1), 
                                    (('A03', 'NN', 'HH'), 2)
                                    ]))])
-
-'''
-OrderedDict([('test', OrderedDict([(('t', 'e', 's', 't'), 2), 
-                                   (('t', 'e', 'e', 's', 't'), 3), 
-                                   (('t', 's', 't'), 4), 
-                                   (('t', 'y', 's', 't'), 8), 
-                                   (('t', 'X', 's', 't'), 5)
-                                   ])
-            )])
-
-# same as
-
-dictionary = OrderedDict()
-pronunciations = OrderedDict()
-pronunciations[tuple(("t", "e", "s", "t"))] = 2
-pronunciations[tuple(("t", "e", "e", "s", "t"))] = 3
-pronunciations[tuple(("t", "s", "t"))] = 4  # keep untouched
-pronunciations[tuple(("t", "y", "s", "t"))] = 8  # same as first
-pronunciations[tuple(("t", "X", "s", "t"))] = 5  # existing that will be extended
-dictionary["test"] = pronunciations
-print(dictionary)
-'''
 
 mappings = {
     "AO": "ɔ",
@@ -40,14 +21,36 @@ mappings = {
     "EY2": "ˌeɪ"
 }
 
-partial_mapping_flag = False
+testing_flag = True
 
 # Mapping
 
-resulting_dictionary_with_changes_without_partial_flag = OrderedDict()
-resulting_dictionary_with_changes_with_partial_flag = OrderedDict()
-resulting_dictionary_without_changes_without_partial_flag = OrderedDict()
-resulting_dictionary_without_changes_with_partial_flag = OrderedDict()
+mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(test_dictionary, mappings)
+changed_words = set()
+
+partial_mapping_flag = False
+
+resulting_dictionary_with_changes_without_partial_flag = test_dictionary.copy()
+for mappable_symbol in mappable_symbols:
+    changed_words = process_mappable_symbol(resulting_dictionary_with_changes_without_partial_flag, mappings, 
+                                            mappable_symbol, partial_mapping_flag, None, testing_flag)
+
+resulting_dictionary_without_changes_without_partial_flag = test_dictionary.copy()
+for mappable_symbol in mappable_symbols:
+    changed_words = process_mappable_symbol(resulting_dictionary_without_changes_without_partial_flag, mappings, 
+                                            mappable_symbol, partial_mapping_flag, None, testing_flag)
+
+partial_mapping_flag = True
+
+resulting_dictionary_with_changes_with_partial_flag = test_dictionary.copy()
+for mappable_symbol in mappable_symbols:
+    changed_words = process_mappable_symbol(resulting_dictionary_with_changes_with_partial_flag, mappings, 
+                                            mappable_symbol, partial_mapping_flag, None, testing_flag)
+
+resulting_dictionary_without_changes_with_partial_flag = test_dictionary.copy()
+for mappable_symbol in mappable_symbols:
+    changed_words = process_mappable_symbol(resulting_dictionary_without_changes_with_partial_flag, mappings, 
+                                            mappable_symbol, partial_mapping_flag, None, testing_flag)
 
 # Expected data
 
@@ -67,7 +70,15 @@ expected_dictionary_without_changes_with_partial_flag = OrderedDict([('test', Or
 
 # Comparisons
 
-assert resulting_dictionary_with_changes_without_partial_flag == expected_dictionary_with_changes_without_partial_flag, f"Resulting dictionary with changes without partial flag is not as expected"
-assert resulting_dictionary_with_changes_with_partial_flag == expected_dictionary_with_changes_with_partial_flag, f"Resulting dictionary with changes with partial flag is not as expected"
-assert resulting_dictionary_without_changes_without_partial_flag == expected_dictionary_without_changes_without_partial_flag, f"Resulting dictionary without changes without partial flag is not as expected"
-assert resulting_dictionary_without_changes_with_partial_flag == expected_dictionary_without_changes_with_partial_flag, f"Resulting dictionary without changes with partial flag is not as expected"
+assert resulting_dictionary_with_changes_without_partial_flag == \
+    expected_dictionary_with_changes_without_partial_flag, \
+    f"Resulting dictionary with changes without partial flag is not as expected"
+assert resulting_dictionary_with_changes_with_partial_flag == \
+    expected_dictionary_with_changes_with_partial_flag, \
+    f"Resulting dictionary with changes with partial flag is not as expected"
+assert resulting_dictionary_without_changes_without_partial_flag == \
+    expected_dictionary_without_changes_without_partial_flag, \
+    f"Resulting dictionary without changes without partial flag is not as expected"
+assert resulting_dictionary_without_changes_with_partial_flag == \
+    expected_dictionary_without_changes_with_partial_flag, \
+    f"Resulting dictionary without changes with partial flag is not as expected"

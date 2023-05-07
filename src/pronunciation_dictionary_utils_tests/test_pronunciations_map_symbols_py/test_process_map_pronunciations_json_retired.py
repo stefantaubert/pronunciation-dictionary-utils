@@ -1,3 +1,4 @@
+"""
 from typing import Tuple, Dict, Set
 
 from collections import OrderedDict
@@ -127,3 +128,4 @@ def test_pronunciations_map_symbols_json_with_partial():
             assert not offending_symbols, f"Unexpected symbol(s) found in {word}: {', '.join(offending_symbols)}"
             # Are pronunciations in the dictionary as expected?
             assert pronunciation == expected_pronunciation, f"Expected {expected_pronunciation} as pronunciation, not {pronunciation}"
+"""

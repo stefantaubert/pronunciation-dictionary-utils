@@ -50,7 +50,7 @@ def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Di
 
   return mappable_symbols, unmappable_symbols
 
-def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=None, mp_options=None, testing=False) -> set():
+def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None, testing=False) -> set():
   # prepares the mappable symbol
   from_symbol = mappable_symbol
   from_symbol = OrderedSet((from_symbol,))
