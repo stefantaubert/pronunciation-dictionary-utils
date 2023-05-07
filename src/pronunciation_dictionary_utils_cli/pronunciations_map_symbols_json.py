@@ -111,11 +111,12 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 
   # mapping all mappable symbols in the dictionary
   changed_words_total = set()
-  for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
-    changed_words = process_mappable_symbol(dictionary_instance, mappings, mappable_symbol, ns.partial_mapping, mp_options)
-    changed_words_total |= changed_words
-
-  # TODO test with no changes
+  if mappable_symbols:
+    for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+      changed_words = process_mappable_symbol(dictionary_instance, mappings, mappable_symbol, ns.partial_mapping, mp_options)
+      changed_words_total |= changed_words
+  else:
+    tqdm(total=1, desc="Mapping").update(1)
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
@@ -124,8 +125,6 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)
   if not success:
     return False
-
-  # TODO check these numbers
 
   logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
