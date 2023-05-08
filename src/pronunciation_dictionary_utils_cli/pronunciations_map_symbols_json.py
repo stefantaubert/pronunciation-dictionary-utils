@@ -65,6 +65,8 @@ def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mappi
   if partial_mapping is True and " " in to_phonemes:
       raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
   
+  changed_words = set()
+
   # maps the mappable symbol to the mapping
   if not testing:
     changed_words = map_symbols(
