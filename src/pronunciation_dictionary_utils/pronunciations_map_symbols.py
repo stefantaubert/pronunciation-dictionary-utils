@@ -19,6 +19,7 @@ def __validate_symbol(symbol: str) -> Optional[str]:
   return None
 
 
+# nat: return type should be set(), not int
 def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, use_tqdm: bool = True) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
