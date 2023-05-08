@@ -45,6 +45,32 @@ def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Di
 
   return mappable_symbols, unmappable_symbols
 
+# version 2, exploring an idea
+def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None) -> set():
+  # prepares the mappable symbol
+  from_symbol = mappable_symbol
+  from_symbol = OrderedSet((from_symbol,))
+
+  # prepares the mapping process by getting a mapping (value in dictionary mappings for key mappable_symbol) 
+  # to map the mappable symbol to
+  mapping = mappings[mappable_symbol]
+  to_phonemes = mapping
+  if partial_mapping is False:
+    to_phonemes = mapping.split(" ")  # allows whitespaces
+    to_phonemes = [p for p in to_phonemes if len(p) > 0]
+  if partial_mapping is True and " " in to_phonemes:
+      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
+  
+  changed_words = set()
+
+  # maps the mappable symbol to the mapping
+  changed_words = map_symbols(
+    dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
+
+  return changed_words
+
+# version 1
+"""
 def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None, testing=False) -> set():
   # prepares the mappable symbol
   from_symbol = mappable_symbol
@@ -77,7 +103,7 @@ def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mappi
       changed_words.add(word)
 
   return changed_words
-
+"""
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
