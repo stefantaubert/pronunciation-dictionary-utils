@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 from argparse import ArgumentParser, Namespace
 
 from logging import Logger
@@ -11,11 +11,8 @@ from tqdm import tqdm
 
 from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group, 
-  add_mp_group, parse_existing_file, parse_non_empty_or_whitespace)
-from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
-
-from pronunciation_dictionary_utils.pronunciations_map_symbols import (
-  __init_pool, process_map_pronunciations_full, process_map_pronunciations_partial)
+  add_mp_group, parse_existing_file)
+from pronunciation_dictionary_utils_cli.io import (try_load_dict, try_save_dict)
 
 DEFAULT_EMPTY_WEIGHT = 1.0
 
@@ -33,6 +30,7 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
+
 def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[list, list]:
   dictionary_unique_sounds = get_phoneme_set(dictionary)
   
@@ -45,7 +43,7 @@ def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Di
 
   return mappable_symbols, unmappable_symbols
 
-# version 2, exploring an idea
+
 def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None) -> set():
   # prepares the mappable symbol
   from_symbol = mappable_symbol
@@ -60,50 +58,14 @@ def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mappi
     to_phonemes = [p for p in to_phonemes if len(p) > 0]
   if partial_mapping is True and " " in to_phonemes:
       raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
-  
-  changed_words = set()
 
   # maps the mappable symbol to the mapping
+  changed_words = set()
   changed_words = map_symbols(
     dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
 
   return changed_words
 
-# version 1
-"""
-def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None, testing=False) -> set():
-  # prepares the mappable symbol
-  from_symbol = mappable_symbol
-  from_symbol = OrderedSet((from_symbol,))
-
-  # prepares the mapping process by getting a mapping (value in dictionary mappings for key mappable_symbol) 
-  # to map the mappable symbol to
-  mapping = mappings[mappable_symbol]
-  to_phonemes = mapping
-  if partial_mapping is False:
-    to_phonemes = mapping.split(" ")  # allows whitespaces
-    to_phonemes = [p for p in to_phonemes if len(p) > 0]
-  if partial_mapping is True and " " in to_phonemes:
-      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
-  
-  changed_words = set()
-
-  # maps the mappable symbol to the mapping
-  if not testing:
-    changed_words = map_symbols(
-      dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
-  else:
-    __init_pool(dictionary)
-    if partial_mapping is True:
-       word, new_pronunciations = process_map_pronunciations_partial("test", from_symbol, to_phonemes)
-    else:
-       word, new_pronunciations = process_map_pronunciations_full("test", from_symbol, to_phonemes)
-    if new_pronunciations:
-      dictionary[word] = new_pronunciations
-      changed_words.add(word)
-
-  return changed_words
-"""
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
