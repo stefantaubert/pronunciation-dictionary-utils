@@ -19,18 +19,13 @@ from pronunciation_dictionary_utils.pronunciations_map_symbols import (
 
 DEFAULT_EMPTY_WEIGHT = 1.0
 
-# arguments for the main function
-
 
 def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   parser.description = "Map symbols in pronunciations according to mappings in *.json file."
-  # file to be changed
   parser.add_argument("dictionary", metavar='DICTIONARY',
                       type=parse_existing_file, help="dictionary file")
-  # source file for mappings
   parser.add_argument("mapping", metavar='MAPPING',
                       type=parse_existing_file, help="mapping file")
-  # additional option, partial mapping
   parser.add_argument("-pm", "--partial-mapping", action="store_true",
                       help="map symbols inside a symbol; useful when mapping the same vowel having different tones or stress within one operation")
   add_encoding_argument(parser, "-me", "--mapping-encoding", "encoding of mapping")
@@ -55,8 +50,8 @@ def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mappi
   from_symbol = mappable_symbol
   from_symbol = OrderedSet((from_symbol,))
 
-  # prepares the mapping
-  # gets a mapping (value in dictionary mappings for key mappable_symbol) to map the mappable symbol to
+  # prepares the mapping process by getting a mapping (value in dictionary mappings for key mappable_symbol) 
+  # to map the mappable symbol to
   mapping = mappings[mappable_symbol]
   to_phonemes = mapping
   if partial_mapping is False:
@@ -95,7 +90,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   if dictionary_instance is None:
     return False
   
-  # loads the file with the mappings, saves the mappings to a dictionary
+  # loads the file with the mappings
   with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
     if mapping_file is None:  # no file
       return False
