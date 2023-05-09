@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from functools import partial
 from multiprocessing.pool import Pool
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 
 from ordered_set import OrderedSet
 from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
@@ -19,8 +19,7 @@ def __validate_symbol(symbol: str) -> Optional[str]:
   return None
 
 
-# nat: return type should be set(), not int
-def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, use_tqdm: bool = True) -> int:
+def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, use_tqdm: bool = True) -> Set[str]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(symbols, OrderedSet):
