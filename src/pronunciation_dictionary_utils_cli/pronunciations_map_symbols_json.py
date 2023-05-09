@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Tuple
+from typing import Dict, Set, Tuple
 from argparse import ArgumentParser, Namespace
 
 from logging import Logger
@@ -31,7 +31,7 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   return map_symbols_in_pronunciations_ns
 
 
-def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[list, list]:
+def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[OrderedSet, OrderedSet]:
   dictionary_unique_sounds = get_phoneme_set(dictionary)
   
   # sounds that are both in the dictionary and the mapping file
@@ -43,52 +43,51 @@ def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Di
 
   return mappable_symbols, unmappable_symbols
 
+"""
+# version with two methods out of "process_mappable_symbol", one with partial mapping and one without
 
-def process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping=False, mp_options=None) -> set():
-  # prepares the mappable symbol
-  from_symbol = mappable_symbol
-  from_symbol = OrderedSet((from_symbol,))
+def process_mappable_symbol_with_partial_method(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+                            mp_options: MultiprocessingOptions = None) -> Set[str]:
+  from_symbol = OrderedSet((mappable_symbol,))
+  to_phonemes = mappings[mappable_symbol]
 
-  # prepares the mapping process by getting a mapping (value in dictionary mappings for key mappable_symbol) 
-  # to map the mappable symbol to
-  mapping = mappings[mappable_symbol]
-  to_phonemes = mapping
+  if " " in to_phonemes:
+      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
+
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, partial_mapping=True, mp_options, use_tqdm=False)
+
+  return changed_words
+
+
+def process_mappable_symbol_without_partial_method(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+                            mp_options: MultiprocessingOptions = None) -> Set[str]:
+  from_symbol = OrderedSet((mappable_symbol,))
+  to_phonemes = mappings[mappable_symbol]
+  to_phonemes = to_phonemes.split(" ")  # allows whitespaces
+  to_phonemes = [p for p in to_phonemes if len(p) > 0]
+
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, partial_mapping=False, mp_options, use_tqdm=False)
+
+  return changed_words
+"""
+def process_mappable_symbol(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+                            partial_mapping: bool = False, mp_options: MultiprocessingOptions = None) -> Set[str]:
+  from_symbol = OrderedSet((mappable_symbol,))
+  to_phonemes = mappings[mappable_symbol]
   if partial_mapping is False:
-    to_phonemes = mapping.split(" ")  # allows whitespaces
+    to_phonemes = to_phonemes.split(" ")  # allows whitespaces
     to_phonemes = [p for p in to_phonemes if len(p) > 0]
   if partial_mapping is True and " " in to_phonemes:
       raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
 
-  # maps the mappable symbol to the mapping
-  changed_words = set()
   changed_words = map_symbols(
     dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
 
   return changed_words
 
-
-def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
-  lp_options = DeserializationOptions(
-    ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
-  mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
-  s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
-
-  # loads the file to be changed
-  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
-  if dictionary_instance is None:
-    return False
-  
-  # loads the file with the mappings
-  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
-    if mapping_file is None:  # no file
-      return False
-    mappings = json.load(mapping_file)
-    if mappings is None:  # empty file
-      return False
-
-  logger.info(f"Loaded mapping containing {len(mappings)} entries.")
-
-  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(dictionary_instance, mappings)
+def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
+                             partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
+  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(dictionary, mappings)
 
   logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
@@ -98,10 +97,42 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   changed_words_total = set()
   if mappable_symbols:
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
-      changed_words = process_mappable_symbol(dictionary_instance, mappings, mappable_symbol, ns.partial_mapping, mp_options)
+      changed_words = process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping, mp_options)
+      """
+      # version with two methods out of "process_mappable_symbol", one with partial mapping and one without
+
+      if partial_mapping:
+        changed_words = process_with_partial_method(dictionary, mappings, mappable_symbol, mp_options)
+      else:
+        changed_words = process_mappable_symbol_without_partial_method(dictionary, mappings, mappable_symbol, mp_options)
+      """
       changed_words_total |= changed_words
-  else:
-    tqdm(total=1, desc="Mapping").update(1)
+  
+  return changed_words_total
+
+
+def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
+  lp_options = DeserializationOptions(
+    ns.consider_comments, ns.consider_numbers, ns.consider_pronunciation_comments, ns.consider_weights)
+  mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
+  s_options = SerializationOptions(ns.parts_sep, ns.consider_numbers, ns.consider_weights)
+
+  dictionary_instance = try_load_dict(ns.dictionary, ns.encoding, lp_options, mp_options, logger)
+  if dictionary_instance is None:
+    return False
+  logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
+  
+  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
+    if mapping_file is None:  # no file
+      return False
+    mappings = json.load(mapping_file)
+    if mappings is None:  # empty file
+      return False
+    mapping_file.close()
+  logger.info(f"Loaded mapping containing {len(mappings)} entries.")
+
+  changed_words_total = process_mappable_symbols(logger, flogger, dictionary_instance, mappings, 
+                                                 ns.partial_mapping, mp_options)
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
