@@ -46,7 +46,7 @@ def merge_dictionary_files_ns(ns: Namespace, logger: Logger, flogger: Logger) ->
       resulting_dictionary, dictionary_instance, ns.duplicate_handling)
 
   if not changed_anything:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   success = try_save_dict(resulting_dictionary, ns.dictionary,

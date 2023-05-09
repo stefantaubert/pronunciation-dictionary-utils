@@ -39,7 +39,7 @@ def remove_multiple_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Lo
     dictionary_instance, ns.mode, ns.seed, mp_options)
 
   if changed_counter == 0:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   logger.info(f"Changed pronunciations of {changed_counter} word(s).")

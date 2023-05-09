@@ -45,7 +45,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     dictionary_instance, ns.from_symbols, to_symbol, ns.partial_mapping, mp_options)
 
   if len(changed_words) == 0:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   logger.info(f"Changed pronunciations of {len(changed_words)} word(s).")

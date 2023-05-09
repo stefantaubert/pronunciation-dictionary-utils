@@ -37,7 +37,7 @@ def sort_words_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   changed_anything = new_dictionary != dictionary_instance
 
   if not changed_anything:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   success = try_save_dict(new_dictionary, ns.dictionary, ns.encoding, s_options, logger)

@@ -35,7 +35,7 @@ def normalize_weights_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool
   changed_anything = changed_counter > 0
 
   if not changed_anything:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   success = try_save_dict(dictionary_instance, ns.dictionary, ns.encoding, s_options, logger)

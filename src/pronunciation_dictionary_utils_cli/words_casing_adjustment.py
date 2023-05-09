@@ -35,7 +35,7 @@ def change_casing_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   removed_words, created_words = change_word_casing(dictionary_instance, ns.mode, mp_options)
 
   if len(removed_words) == 0:
-    logger.info("Didn't changed anything.")
+    logger.info("Didn't change anything.")
     return True
 
   logger.info(f"Replaced {len(removed_words)} with {len(created_words)} word spelling(s).")
