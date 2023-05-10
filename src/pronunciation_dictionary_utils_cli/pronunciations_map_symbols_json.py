@@ -1,6 +1,6 @@
 import json
 from argparse import ArgumentParser, Namespace
-from collections import OrderedDict
+#from collections import OrderedDict
 from logging import Logger
 from typing import Dict, Set, Tuple
 
@@ -97,8 +97,8 @@ def process_mappable_symbol(dictionary: Dict[str, str], mappings: Dict[str, str]
 def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
                              partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
   unique_sounds_in_dictionary = get_phoneme_set(dictionary)
-  #unique_sounds_in_mappings = get_phoneme_set(mappings)
-  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(unique_sounds_in_dictionary, mappings.keys())
+  unique_sounds_in_mappings = mappings.keys()
+  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
   logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
@@ -138,6 +138,8 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       return False
     mappings = json.load(mapping_file)
     if mappings is None:  # empty file
+      return False
+    if not isinstance(mappings, dict):
       return False
     mapping_file.close()
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
