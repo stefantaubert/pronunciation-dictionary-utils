@@ -3,7 +3,7 @@ from collections import OrderedDict
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (
     get_mappable_and_unmappable_symbols, process_mappable_symbol)
 
-from pronunciation_dictionary import MultiprocessingOptions
+from pronunciation_dictionary import (get_phoneme_set, MultiprocessingOptions)
 
 
 def test_process_map_pronunciations_json_with_changes_with_partial_method() -> None:
@@ -32,7 +32,7 @@ def test_process_map_pronunciations_json_with_changes_with_partial_method() -> N
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(test_dictionary, mappings)
+    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
     
     changed_words = set()
 
@@ -72,7 +72,7 @@ def test_process_map_pronunciations_json_with_changes_without_partial_method() -
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(test_dictionary, mappings)
+    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
     
     changed_words = set()
 
@@ -109,7 +109,7 @@ def test_process_map_pronunciations_json_without_changes_with_partial_method() -
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(test_dictionary, mappings)
+    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
     
     changed_words = set()
 
@@ -146,7 +146,7 @@ def test_process_map_pronunciations_json_without_changes_without_partial_method(
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(test_dictionary, mappings)
+    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
     
     changed_words = set()
 

@@ -30,6 +30,19 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
+'''
+def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[OrderedSet, OrderedSet]:
+  dictionary_unique_sounds = get_phoneme_set(dictionary)
+  
+  # sounds that are both in the dictionary and the mapping file
+  mappable_symbols = dictionary_unique_sounds.intersection(mappings)
+  mappable_symbols = sorted(mappable_symbols, reverse=True, key=len)
+  
+  # sounds that are in the dictionary but not in the mapping file
+  unmappable_symbols = dictionary_unique_sounds - mappings.keys()
+
+  return mappable_symbols, unmappable_symbols
+'''
 def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> Tuple[OrderedSet, OrderedSet]:
   # sounds that are both in the dictionary and the mapping file
   mappable_symbols = sounds_in_dictionary & sounds_in_mappings
@@ -39,7 +52,6 @@ def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_i
   unmappable_symbols = OrderedSet(sounds_in_dictionary - sounds_in_mappings)
 
   return mappable_symbols, unmappable_symbols
-
 """
 # version with two methods out of "process_mappable_symbol", one with partial mapping and one without
 
