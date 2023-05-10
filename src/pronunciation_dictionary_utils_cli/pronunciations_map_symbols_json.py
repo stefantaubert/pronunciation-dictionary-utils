@@ -1,14 +1,14 @@
 import json
-from typing import Dict, Set, Tuple
 from argparse import ArgumentParser, Namespace
-
+from collections import OrderedDict
 from logging import Logger
+from typing import Dict, Set, Tuple
 
 from ordered_set import OrderedSet
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      SerializationOptions, get_phoneme_set)
 from tqdm import tqdm
 
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
+                                      SerializationOptions, get_phoneme_set)
 from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group, 
   add_mp_group, parse_existing_file)
@@ -30,16 +30,13 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
-
-def get_mappable_and_unmappable_symbols(dictionary: Dict[str, str], mappings: Dict[str, str]) -> Tuple[OrderedSet, OrderedSet]:
-  dictionary_unique_sounds = get_phoneme_set(dictionary)
-  
+def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> Tuple[OrderedSet, OrderedSet]:
   # sounds that are both in the dictionary and the mapping file
-  mappable_symbols = dictionary_unique_sounds.intersection(mappings)
-  mappable_symbols = sorted(mappable_symbols, reverse=True, key=len)
+  mappable_symbols = sounds_in_dictionary & sounds_in_mappings
+  mappable_symbols = OrderedSet(sorted(mappable_symbols, reverse=True, key=len))
   
   # sounds that are in the dictionary but not in the mapping file
-  unmappable_symbols = dictionary_unique_sounds - mappings.keys()
+  unmappable_symbols = OrderedSet(sounds_in_dictionary - sounds_in_mappings)
 
   return mappable_symbols, unmappable_symbols
 
@@ -87,7 +84,9 @@ def process_mappable_symbol(dictionary: Dict[str, str], mappings: Dict[str, str]
 
 def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
                              partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
-  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(dictionary, mappings)
+  unique_sounds_in_dictionary = get_phoneme_set(dictionary)
+  #unique_sounds_in_mappings = get_phoneme_set(mappings)
+  mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(unique_sounds_in_dictionary, mappings.keys())
 
   logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
