@@ -1,9 +1,8 @@
 from collections import OrderedDict
 
-from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (
-    get_mappable_and_unmappable_symbols, process_mappable_symbol)
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import process_mappable_symbols
 
-from pronunciation_dictionary import (get_phoneme_set, MultiprocessingOptions)
+from pronunciation_dictionary import MultiprocessingOptions
 
 
 def test_process_map_pronunciations_json_with_changes_without_partial_method() -> None:
@@ -32,14 +31,9 @@ def test_process_map_pronunciations_json_with_changes_without_partial_method() -
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
-    
-    changed_words = set()
-
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    for mappable_symbol in mappable_symbols:
-        changed_words = process_mappable_symbol(result, mappings, mappable_symbol, partial_mapping_flag, mp_options)
+    changed_words = process_mappable_symbols(None, None, result, mappings, partial_mapping_flag, mp_options)
 
     # Comparisons
     assert len(changed_words) == 1 and "test" in changed_words, \
@@ -70,14 +64,9 @@ def test_process_map_pronunciations_json_without_changes_without_partial_method(
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     # Mapping
-    mappable_symbols, _ = get_mappable_and_unmappable_symbols(get_phoneme_set(test_dictionary), mappings.keys())
-    
-    changed_words = set()
-
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    for mappable_symbol in mappable_symbols:
-        changed_words = process_mappable_symbol(result, mappings, mappable_symbol, partial_mapping_flag, mp_options)
+    changed_words = process_mappable_symbols(None, None, result, mappings, partial_mapping_flag, mp_options)
 
     # Comparisons
     assert len(changed_words) == 0 and "test" not in changed_words, \

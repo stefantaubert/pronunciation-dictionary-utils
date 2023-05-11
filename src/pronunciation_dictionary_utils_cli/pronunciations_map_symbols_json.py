@@ -87,9 +87,10 @@ def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[s
   unique_sounds_in_mappings = mappings.keys()
   mappable_symbols, unmappable_symbols = get_mappable_and_unmappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
-  logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
-  flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
-  flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
+  if logger and flogger:
+    logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
+    flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
+    flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
   changed_words_total = set()
   if mappable_symbols:
