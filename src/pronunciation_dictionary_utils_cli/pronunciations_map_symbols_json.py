@@ -40,9 +40,7 @@ def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_i
   return mappable_symbols, unmappable_symbols
 
 """
-# version with two methods out of "process_mappable_symbol", one with partial mapping and one without
-
-def process_mappable_symbol_with_partial_method(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
   to_phonemes = mappings[mappable_symbol]
@@ -55,7 +53,7 @@ def process_mappable_symbol_with_partial_method(dictionary: Dict[str, str], mapp
   return changed_words
 
 
-def process_mappable_symbol_without_partial_method(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
   to_phonemes = mappings[mappable_symbol]
@@ -66,7 +64,7 @@ def process_mappable_symbol_without_partial_method(dictionary: Dict[str, str], m
 
   return changed_words
 """
-def process_mappable_symbol(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
+def apply_mapping(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             partial_mapping: bool = False, mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
   to_phonemes = mappings[mappable_symbol]
@@ -81,7 +79,7 @@ def process_mappable_symbol(dictionary: Dict[str, str], mappings: Dict[str, str]
 
   return changed_words
 
-def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
+def apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
                              partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
   unique_sounds_in_dictionary = get_phoneme_set(dictionary)
   unique_sounds_in_mappings = mappings.keys()
@@ -95,14 +93,12 @@ def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[s
   changed_words_total = set()
   if mappable_symbols:
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
-      changed_words = process_mappable_symbol(dictionary, mappings, mappable_symbol, partial_mapping, mp_options)
+      changed_words = apply_mapping(dictionary, mappings, mappable_symbol, partial_mapping, mp_options)
       """
-      # version with two methods out of "process_mappable_symbol", one with partial mapping and one without
-
       if partial_mapping:
-        changed_words = process_mappable_symbol_with_partial_method(dictionary, mappings, mappable_symbol, mp_options)
+        changed_words = apply_mapping_partial(dictionary, mappings, mappable_symbol, mp_options)
       else:
-        changed_words = process_mappable_symbol_without_partial_method(dictionary, mappings, mappable_symbol, mp_options)
+        changed_words = apply_mapping_full(dictionary, mappings, mappable_symbol, mp_options)
       """
       changed_words_total |= changed_words
   
@@ -132,7 +128,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     mapping_file.close()
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
-  changed_words_total = process_mappable_symbols(logger, flogger, dictionary_instance, mappings, 
+  changed_words_total = apply_mappings(logger, flogger, dictionary_instance, mappings, 
                                                  ns.partial_mapping, mp_options)
 
   if len(changed_words_total) == 0:
