@@ -1,5 +1,6 @@
-import json
 from argparse import ArgumentParser, Namespace
+import json
+from json.decoder import JSONDecodeError
 from logging import Logger
 from typing import Dict, Set, Tuple
 
@@ -39,7 +40,6 @@ def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_i
 
   return mappable_symbols, unmappable_symbols
 
-"""
 def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
@@ -48,10 +48,9 @@ def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], 
   if " " in to_phonemes:
       raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
 
-  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, partial_mapping=True, mp_options, use_tqdm=False)
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, True, mp_options, use_tqdm=False)
 
   return changed_words
-
 
 def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
@@ -60,22 +59,7 @@ def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], map
   to_phonemes = to_phonemes.split(" ")  # allows whitespaces
   to_phonemes = [p for p in to_phonemes if len(p) > 0]
 
-  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, partial_mapping=False, mp_options, use_tqdm=False)
-
-  return changed_words
-"""
-def apply_mapping(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
-                            partial_mapping: bool = False, mp_options: MultiprocessingOptions = None) -> Set[str]:
-  from_symbol = OrderedSet((mappable_symbol,))
-  to_phonemes = mappings[mappable_symbol]
-  if partial_mapping is False:
-    to_phonemes = to_phonemes.split(" ")  # allows whitespaces
-    to_phonemes = [p for p in to_phonemes if len(p) > 0]
-  if partial_mapping is True and " " in to_phonemes:
-      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
-
-  changed_words = map_symbols(
-    dictionary, from_symbol, to_phonemes, partial_mapping, mp_options, use_tqdm=False)
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, False, mp_options, use_tqdm=False)
 
   return changed_words
 
@@ -93,17 +77,13 @@ def apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], 
   changed_words_total = set()
   if mappable_symbols:
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
-      changed_words = apply_mapping(dictionary, mappings, mappable_symbol, partial_mapping, mp_options)
-      """
       if partial_mapping:
         changed_words = apply_mapping_partial(dictionary, mappings, mappable_symbol, mp_options)
       else:
         changed_words = apply_mapping_full(dictionary, mappings, mappable_symbol, mp_options)
-      """
       changed_words_total |= changed_words
   
   return changed_words_total
-
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
@@ -117,19 +97,17 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
   
   with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file: # only last value saved for duplicate keys from file
-    # following checks are never reached by failures
-    if mapping_file is None:  # no file
-      return False
-    mappings = json.load(mapping_file)
-    if mappings is None:  # empty file
+    try:
+      mappings = json.load(mapping_file)
+    except JSONDecodeError or TypeError:
+      flogger.info("No or invalid content in mapping file.")
       return False
     if not isinstance(mappings, dict):
+      flogger.info("Mapping file must contain dictionary structure.")
       return False
-    mapping_file.close()
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
-  changed_words_total = apply_mappings(logger, flogger, dictionary_instance, mappings, 
-                                                 ns.partial_mapping, mp_options)
+  changed_words_total = apply_mappings(logger, flogger, dictionary_instance, mappings, ns.partial_mapping, mp_options)
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
