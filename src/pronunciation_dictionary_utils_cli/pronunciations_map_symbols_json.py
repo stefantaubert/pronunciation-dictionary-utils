@@ -91,7 +91,6 @@ def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[s
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
   flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
-  # mapping all mappable symbols in the dictionary
   changed_words_total = set()
   if mappable_symbols:
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
@@ -100,7 +99,7 @@ def process_mappable_symbols(logger: Logger, flogger: Logger, dictionary: Dict[s
       # version with two methods out of "process_mappable_symbol", one with partial mapping and one without
 
       if partial_mapping:
-        changed_words = process_with_partial_method(dictionary, mappings, mappable_symbol, mp_options)
+        changed_words = process_mappable_symbol_with_partial_method(dictionary, mappings, mappable_symbol, mp_options)
       else:
         changed_words = process_mappable_symbol_without_partial_method(dictionary, mappings, mappable_symbol, mp_options)
       """
@@ -121,6 +120,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
   
   with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file: # only last value saved for duplicate keys from file
+    # following checks are never reached by failures
     if mapping_file is None:  # no file
       return False
     mappings = json.load(mapping_file)
