@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, Namespace
+from functools import partial
 import json
 from json.decoder import JSONDecodeError
 from logging import Logger
@@ -7,11 +8,10 @@ from typing import Dict, Set, Tuple
 from ordered_set import OrderedSet
 from tqdm import tqdm
 
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
-                                      SerializationOptions, get_phoneme_set)
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions, SerializationOptions, get_phoneme_set)
 from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group, 
-  add_mp_group, parse_existing_file)
+                                                                add_mp_group, parse_existing_file)
 from pronunciation_dictionary_utils_cli.io import (try_load_dict, try_save_dict)
 
 DEFAULT_EMPTY_WEIGHT = 1.0
@@ -30,6 +30,7 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser):
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
+
 def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> Tuple[OrderedSet, OrderedSet]:
   # sounds that are both in the dictionary and the mapping file
   mappable_symbols = sounds_in_dictionary & sounds_in_mappings
@@ -40,28 +41,33 @@ def get_mappable_and_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_i
 
   return mappable_symbols, unmappable_symbols
 
+
 def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
   to_phonemes = mappings[mappable_symbol]
 
   if " " in to_phonemes:
-      raise Exception("Whitespaces in mapping values aren't supported with partial mapping.")
+      raise Exception("Whitespaces in mappings aren't supported with partial mapping.")
 
   changed_words = map_symbols(dictionary, from_symbol, to_phonemes, True, mp_options, use_tqdm=False)
 
   return changed_words
 
+
 def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
                             mp_options: MultiprocessingOptions = None) -> Set[str]:
   from_symbol = OrderedSet((mappable_symbol,))
   to_phonemes = mappings[mappable_symbol]
-  to_phonemes = to_phonemes.split(" ")  # allows whitespaces
+
+  # method without partial flag allows whitespaces within mappings
+  to_phonemes = to_phonemes.split(" ")
   to_phonemes = [p for p in to_phonemes if len(p) > 0]
 
   changed_words = map_symbols(dictionary, from_symbol, to_phonemes, False, mp_options, use_tqdm=False)
 
   return changed_words
+
 
 def apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
                              partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
@@ -73,7 +79,8 @@ def apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], 
     logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
     flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
     flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
-
+  
+  """
   changed_words_total = set()
   if mappable_symbols:
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
@@ -82,8 +89,31 @@ def apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], 
       else:
         changed_words = apply_mapping_full(dictionary, mappings, mappable_symbol, mp_options)
       changed_words_total |= changed_words
+  """
+  """
+  changed_words_total = set()
+  if mappable_symbols:
+    for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+      changed_words = apply_mapping_partial(dictionary, mappings, mappable_symbol, mp_options) if partial_mapping \
+          else apply_mapping_full(dictionary, mappings, mappable_symbol, mp_options)
+      changed_words_total |= changed_words
+  
+  """
+  # from functools import partial
+  changed_words_total = set()
+  if mappable_symbols:
+    mapping_method = partial(
+      apply_mapping_partial if partial_mapping else apply_mapping_full,
+      dictionary=dictionary,
+      mappings=mappings,
+      mp_options=mp_options
+    )
+    for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+        changed_words = mapping_method(mappable_symbol=mappable_symbol)
+        changed_words_total |= changed_words
   
   return changed_words_total
+
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   lp_options = DeserializationOptions(
@@ -96,14 +126,15 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     return False
   logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
   
-  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file: # only last value saved for duplicate keys from file
+  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file: 
+    # warning: only last value saved for duplicate keys in file
     try:
       mappings = json.load(mapping_file)
     except JSONDecodeError or TypeError:
       flogger.info("No or invalid content in mapping file.")
       return False
     if not isinstance(mappings, dict):
-      flogger.info("Mapping file must contain dictionary structure.")
+      flogger.info("Mapping file didn't contain dictionary.")
       return False
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
