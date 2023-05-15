@@ -19,11 +19,11 @@ def test_with_changes() -> None:
         "AO": "ɔ",
         "AO0": "ɔ",
         "AO2": "ˌɔ",
-        "EY2": "ˌeɪ"
+        "EY2": "ˌe ɪ"
     }
 
     expected_result = OrderedDict([("test", OrderedDict([
-                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."), 1), 
+                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌe", "ɪ", "."), 1), 
                                     (("A03", "NN", "HH"), 2)]))])
 
 
