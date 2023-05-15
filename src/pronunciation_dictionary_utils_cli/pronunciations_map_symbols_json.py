@@ -154,12 +154,16 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     # warning: only last value saved for duplicate keys in file
     try:
       mappings = json.load(mapping_file)
-    except JSONDecodeError or TypeError:
+    except (JSONDecodeError, TypeError):
       flogger.info("No or invalid content in mapping file.")
       return False
     if not isinstance(mappings, dict):
       flogger.info("Mapping file didn't contain dictionary.")
       return False
+    for key, value in mappings.items():
+      if not isinstance(key, str) or not isinstance(value, str):
+          flogger.info("Keys or values in mapping file are not of type string.")
+          return False
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
   changed_words_total = identify_and_apply_mappings(logger, flogger, dictionary_instance, mappings, ns.partial_mapping, mp_options)
