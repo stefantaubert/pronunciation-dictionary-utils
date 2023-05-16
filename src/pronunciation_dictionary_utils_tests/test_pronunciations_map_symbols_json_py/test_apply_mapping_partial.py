@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import pytest
 
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (apply_mapping_partial, get_mappable_symbols)
 
@@ -46,6 +47,22 @@ def test_with_changes() -> None:
     assert len(changed_words_total) == 1 and "test" in changed_words_total, \
         f"Expected changes to words have not been made."
     assert result == expected_result, f"Resulting dictionary with changes without partial flag is not as expected."
+
+
+def test_with_whitespaces() -> None:
+    # Data to be tested
+    test_dictionary = OrderedDict([("test", OrderedDict([(("EY2",), 1)]))])
+    mappings = {"EY2": "ˌe ɪ"}
+
+    unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
+    unique_sounds_in_mappings = mappings.keys()
+    mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
+
+    mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+
+    # Mapping
+    with pytest.raises(Exception):
+        changed_words = apply_mapping_partial(test_dictionary, mappings, mappable_symbols[0], mp_options)
 
 
 def test_without_changes() -> None:

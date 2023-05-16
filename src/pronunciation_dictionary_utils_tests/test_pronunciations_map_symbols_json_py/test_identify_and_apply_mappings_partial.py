@@ -1,3 +1,4 @@
+import pytest
 from collections import OrderedDict
 
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import identify_and_apply_mappings
@@ -38,6 +39,20 @@ def test_with_changes() -> None:
     assert len(changed_words) == 1 and "test" in changed_words, \
         f"Expected changes to words have not been made."
     assert result == expected_result, f"Resulting dictionary with changes with partial flag is not as expected."
+
+
+def test_with_whitespaces() -> None:
+    # Data to be tested
+    test_dictionary = OrderedDict([("test", OrderedDict([(("EY2",), 1)]))])
+    mappings = {"EY2": "ˌe ɪ"}
+
+    # Mock object necessary for mapping
+    mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+
+    # Mapping
+    partial_mapping_flag = True
+    with pytest.raises(Exception):
+        changed_words = identify_and_apply_mappings(None, None, test_dictionary, mappings, partial_mapping_flag, mp_options)
 
 
 def test_without_changes() -> None:

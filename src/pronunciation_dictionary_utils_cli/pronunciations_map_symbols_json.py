@@ -158,7 +158,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
       flogger.info("No or invalid content in mapping file.")
       return False
     if not isinstance(mappings, dict):
-      flogger.info("Mapping file didn't contain dictionary.")
+      flogger.info("No dictionary found in mapping file.")
       return False
     for key, value in mappings.items():
       if not isinstance(key, str) or not isinstance(value, str):

@@ -14,17 +14,6 @@ def test_symbols_found():
     assert expected_mappable_symbols == mappable_symbols, f"Resulting mappable symbols are not as expected"
 
 
-def test_symbols_found():
-    sounds_in_dictionary = OrderedSet(["AO", "AO2", "AO3", "AA1", "EY2", ".", "A03", "NN", "HH"])
-    sounds_in_mappings = OrderedSet(["EY1", "EY", "AO1", "EY0", "AO", "AO0", "AO2", "EY2"])
-
-    expected_mappable_symbols = OrderedSet(['AO2', 'EY2', 'AO'])
-
-    mappable_symbols = get_mappable_symbols(sounds_in_dictionary, sounds_in_mappings)
-
-    assert expected_mappable_symbols == mappable_symbols, f"Resulting mappable symbols are not as expected"
-
-
 def test_symbols_not_found():
     sounds_in_dictionary = OrderedSet(["AO", "AO2", "AO3", "AA1", "EY2", ".", "A03", "NN", "HH"])
     sounds_in_mappings = OrderedSet(["EY1", "EY", "AO1", "EY0", "AO0"])

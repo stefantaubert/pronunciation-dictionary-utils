@@ -19,6 +19,41 @@ def test_with_changes() -> None:
         "AO": "ɔ",
         "AO0": "ɔ",
         "AO2": "ˌɔ",
+        "EY2": "ˌeɪ"
+    }
+
+    expected_result = OrderedDict([("test", OrderedDict([
+                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."), 1), 
+                                    (("A03", "NN", "HH"), 2)]))])
+    
+    # Mock object necessary for mapping
+    mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+
+    # Mapping
+    partial_mapping_flag = False
+    result = test_dictionary.copy()
+    changed_words = identify_and_apply_mappings(None, None, result, mappings, partial_mapping_flag, mp_options)
+
+    # Comparisons
+    assert len(changed_words) == 1 and "test" in changed_words, \
+        f"Expected changes to words have not been made."
+    assert result == expected_result, f"Resulting dictionary with changes without partial flag is not as expected."
+
+
+def test_with_whitespaces() -> None:
+    # Data to be tested
+    test_dictionary = OrderedDict([("test", OrderedDict([
+                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1), 
+                                    (("A03", "NN", "HH"), 2)
+                                    ]))])
+    mappings = {
+        "EY1": "ˈeɪ",
+        "EY": "eɪ",
+        "AO1": "ˈɔ",
+        "EY0": "eɪ",
+        "AO": "ɔ",
+        "AO0": "ɔ",
+        "AO2": "ˌɔ",
         "EY2": "ˌe ɪ"
     }
 
