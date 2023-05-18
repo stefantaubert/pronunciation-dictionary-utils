@@ -79,7 +79,7 @@ def test_without_changes() -> None:
 
 def test_empty() -> None:
     test_dictionary = OrderedDict()
-    mappings = {}
+    mappings = dict()
 
     expected_result = OrderedDict()
 

@@ -18,14 +18,16 @@ from functools import partial
 import json
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Dict, Set, Tuple
+from typing import Dict, List, Set
 
 from ordered_set import OrderedSet
 from tqdm import tqdm
 
-from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions, SerializationOptions, get_phoneme_set)
+from pronunciation_dictionary import (
+  DeserializationOptions, MultiprocessingOptions, SerializationOptions, get_phoneme_set)
+from pronunciation_dictionary.types import PronunciationDict
 from pronunciation_dictionary_utils import map_symbols
-from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group, 
+from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group,
                                                                 add_mp_group, parse_existing_file)
 from pronunciation_dictionary_utils_cli.io import (try_load_dict, try_save_dict)
 
@@ -49,26 +51,32 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser) -> Namesp
   return map_symbols_in_pronunciations_ns
 
 
-def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> OrderedSet():
+def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
   """
-  Returns symbols that occur both in the passed dictionary and the mappings. 
-  The returned symbols are in a descending order according to their length.
+  Returns a list of unique symbols that occur both in the passed dictionary and the mappings. 
+  The returned symbols are sorted in descending order by length, where elements with 
+  the same length are sorted alphabetically in ascending order among themselves.
   """
-  mappable_symbols = sounds_in_dictionary & sounds_in_mappings
-  mappable_symbols = OrderedSet(sorted(mappable_symbols, reverse=True, key=len))
-  return mappable_symbols
+  mappable_symbols = []
+  mappable_symbols = [symbol for symbol in sounds_in_dictionary if symbol in sounds_in_mappings and symbol not in mappable_symbols]
+  sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+  return sorted_mappable_symbols
 
 
-def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> Tuple[OrderedSet, OrderedSet]:
+def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
   """
-  Returns symbols that occur in the dictionary but not in the mappings.
+  Returns a list of unique symbols that occur in the dictionary but not in the mappings.
+  The returned symbols are sorted in descending order by length, where elements with 
+  the same length are sorted alphabetically in ascending order among themselves.
   """
-  unmappable_symbols = OrderedSet(sounds_in_dictionary - sounds_in_mappings)
-  return unmappable_symbols
+  unmappable_symbols = []
+  unmappable_symbols = [symbol for symbol in sounds_in_dictionary if symbol not in sounds_in_mappings and symbol not in unmappable_symbols]
+  sorted_unmappable_symbols = sorted(unmappable_symbols, key=lambda x: (-len(x), x))
+  return sorted_unmappable_symbols
 
 
-def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
-                            mp_options: MultiprocessingOptions = None) -> Set[str]:
+def apply_mapping_partial(dictionary: PronunciationDict, mappings: Dict[str, str], mappable_symbol: str,
+                          mp_options: MultiprocessingOptions = None) -> Set[str]:
   """
   Applies partial mapping for a single mappable symbol. It returns a set of words whose pronunciations have been changed. 
   It enables mapping the symbol occuring within a longer symbol, e.g., passing the symbol "AO1" and 
@@ -80,13 +88,14 @@ def apply_mapping_partial(dictionary: Dict[str, str], mappings: Dict[str, str], 
   if " " in to_phonemes:
       raise Exception("Whitespaces in mappings aren't supported with partial mapping.")
 
-  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, True, mp_options, use_tqdm=False)
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes,
+                              True, mp_options, use_tqdm=False)
 
   return changed_words
 
 
-def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], mappable_symbol: str, 
-                            mp_options: MultiprocessingOptions = None) -> Set[str]:
+def apply_mapping_full(dictionary: PronunciationDict, mappings: Dict[str, str], mappable_symbol: str,
+                       mp_options: MultiprocessingOptions = None) -> Set[str]:
   """
   Applies mapping for a single mappable symbol. It returns a set of words whose pronunciations have been changed. 
   It does not map the symbol occuring within a longer symbol e.g., passing the symbol "AO1" and 
@@ -99,20 +108,21 @@ def apply_mapping_full(dictionary: Dict[str, str], mappings: Dict[str, str], map
   to_phonemes = to_phonemes.split(" ")
   to_phonemes = [p for p in to_phonemes if len(p) > 0]
 
-  changed_words = map_symbols(dictionary, from_symbol, to_phonemes, False, mp_options, use_tqdm=False)
+  changed_words = map_symbols(dictionary, from_symbol, to_phonemes,
+                              False, mp_options, use_tqdm=False)
 
   return changed_words
 
 
-def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Dict[str, str], mappings: Dict[str, str], 
-                             partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
+def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: PronunciationDict, mappings: Dict[str, str],
+                                partial_mapping: bool, mp_options: 'MultiprocessingOptions') -> Set[str]:
   """
   Identifies applicable mappings and triggers mapping them according to the specified method.
   It returns a set of words whose pronunciations have been changed. 
   """
   unique_sounds_in_dictionary = get_phoneme_set(dictionary)
-  unique_sounds_in_mappings = mappings.keys()
-  
+  unique_sounds_in_mappings = set(mappings.keys())
+
   mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
   unmappable_symbols = get_unmappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
@@ -120,7 +130,7 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Dic
     logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
     flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
     flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
-  
+
   changed_words_total = set()
   if mappable_symbols:
     mapping_method = partial(
@@ -132,7 +142,7 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Dic
     for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
         changed_words = mapping_method(mappable_symbol=mappable_symbol)
         changed_words_total |= changed_words
-  
+
   return changed_words_total
 
 
@@ -149,8 +159,8 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
   if dictionary_instance is None:
     return False
   logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
-  
-  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file: 
+
+  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
     # warning: only last value saved for duplicate keys in file
     try:
       mappings = json.load(mapping_file)
@@ -166,7 +176,8 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
           return False
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
-  changed_words_total = identify_and_apply_mappings(logger, flogger, dictionary_instance, mappings, ns.partial_mapping, mp_options)
+  changed_words_total = identify_and_apply_mappings(
+    logger, flogger, dictionary_instance, mappings, ns.partial_mapping, mp_options)
 
   if len(changed_words_total) == 0:
     logger.info("Didn't change anything.")
@@ -178,5 +189,5 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 
   logger.info(f"Changed pronunciations of {len(changed_words_total)} word(s).")
   logger.info(f"Written dictionary to: \"{ns.dictionary.absolute()}\"")
-  
+
   return True

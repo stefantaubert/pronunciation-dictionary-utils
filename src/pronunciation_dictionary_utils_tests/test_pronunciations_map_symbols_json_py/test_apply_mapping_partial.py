@@ -30,7 +30,7 @@ def test_with_changes() -> None:
     result = test_dictionary.copy()
 
     unique_sounds_in_dictionary = get_phoneme_set(result)
-    unique_sounds_in_mappings = mappings.keys()
+    unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
@@ -49,7 +49,7 @@ def test_with_whitespaces() -> None:
     mappings = {"EY2": "ˌe ɪ"}
 
     unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
-    unique_sounds_in_mappings = mappings.keys()
+    unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
@@ -79,7 +79,7 @@ def test_without_changes() -> None:
     result = test_dictionary.copy()
 
     unique_sounds_in_dictionary = get_phoneme_set(result)
-    unique_sounds_in_mappings = mappings.keys()
+    unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
@@ -95,14 +95,14 @@ def test_without_changes() -> None:
 
 def test_empty() -> None:
     test_dictionary = OrderedDict()
-    mappings = {}
+    mappings = dict()
 
     expected_result = OrderedDict()
 
     result = test_dictionary.copy()
 
     unique_sounds_in_dictionary = get_phoneme_set(result)
-    unique_sounds_in_mappings = mappings.keys()
+    unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
