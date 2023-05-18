@@ -33,7 +33,7 @@ def test_with_changes() -> None:
     changed_words = identify_and_apply_mappings(
         None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    assert len(changed_words) == 1 and "test" in changed_words
+    assert changed_words == {"test"}
     assert result == expected_result
 
 
@@ -73,7 +73,7 @@ def test_without_changes() -> None:
     changed_words = identify_and_apply_mappings(
         None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    assert len(changed_words) == 0 and "test" not in changed_words
+    assert changed_words == set()
     assert result == expected_result
 
 
@@ -90,5 +90,5 @@ def test_empty() -> None:
     changed_words = identify_and_apply_mappings(
         None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    assert len(changed_words) == 0 and "test" not in changed_words
+    assert changed_words == set()
     assert result == expected_result

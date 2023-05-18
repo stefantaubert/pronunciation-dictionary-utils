@@ -19,7 +19,7 @@ def test_symbols_not_found():
 
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  assert len(unmappable_symbols) == 0
+  assert unmappable_symbols == list()
 
 
 def test_empty():
@@ -28,4 +28,4 @@ def test_empty():
 
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  assert len(unmappable_symbols) == 0
+  assert unmappable_symbols == list()

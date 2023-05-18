@@ -20,7 +20,7 @@ def test_symbols_not_found():
 
     mappable_symbols = get_mappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    assert len(mappable_symbols) == 0
+    assert mappable_symbols == list()
 
 
 def test_empty():
@@ -29,4 +29,4 @@ def test_empty():
 
     mappable_symbols = get_mappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    assert len(mappable_symbols) == 0
+    assert mappable_symbols == list()

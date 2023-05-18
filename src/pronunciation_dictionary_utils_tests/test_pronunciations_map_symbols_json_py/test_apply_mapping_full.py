@@ -39,7 +39,7 @@ def test_with_changes() -> None:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 1 and "test" in changed_words_total
+    assert changed_words_total == {"test"}
     assert result == expected_result
 
 
@@ -76,7 +76,7 @@ def test_with_whitespaces() -> None:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 1 and "test" in changed_words_total
+    assert changed_words_total == {"test"}
     assert result == expected_result
 
 
@@ -110,7 +110,7 @@ def test_without_changes() -> None:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 0 and "test" not in changed_words_total
+    assert changed_words_total == set()
     assert result == expected_result
 
 
@@ -133,5 +133,5 @@ def test_empty() -> None:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 0
+    assert changed_words_total == set()
     assert result == expected_result

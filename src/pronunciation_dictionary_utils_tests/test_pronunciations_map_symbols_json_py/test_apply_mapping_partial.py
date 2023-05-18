@@ -40,7 +40,7 @@ def test_with_changes() -> None:
         changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 1 and "test" in changed_words_total
+    assert changed_words_total == {"test"}
     assert result == expected_result
 
 
@@ -54,9 +54,10 @@ def test_with_whitespaces() -> None:
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as expected_exception:
         changed_words = apply_mapping_partial(
             test_dictionary, mappings, mappable_symbols[0], mp_options)
+        assert str(expected_exception) == "Whitespaces in mappings aren't supported with partial mapping."
 
 
 def test_without_changes() -> None:
@@ -89,7 +90,7 @@ def test_without_changes() -> None:
         changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 0 and "test" not in changed_words_total
+    assert changed_words_total == set()
     assert result == expected_result
 
 
@@ -112,5 +113,5 @@ def test_empty() -> None:
         changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
-    assert len(changed_words_total) == 0
+    assert changed_words_total == set()
     assert result == expected_result
