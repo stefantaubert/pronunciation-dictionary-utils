@@ -1,6 +1,6 @@
 from ordered_set import OrderedSet
 
-from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (get_mappable_symbols, get_unmappable_symbols)
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import get_unmappable_symbols
 
 
 def test_symbols_found():
@@ -11,7 +11,7 @@ def test_symbols_found():
 
     unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    assert expected_unmappable_symbols == unmappable_symbols, f"Resulting unmappable symbols are not as expected"
+    assert expected_unmappable_symbols == unmappable_symbols
 
 
 def test_symbols_not_found():
@@ -20,7 +20,7 @@ def test_symbols_not_found():
 
     unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    assert len(unmappable_symbols) == 0, f"Resulting unmappable symbols are not as expected"
+    assert len(unmappable_symbols) == 0
 
 
 def test_empty():
@@ -29,4 +29,4 @@ def test_empty():
 
     unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    assert len(unmappable_symbols) == 0, f"Resulting unmappable symbols are not as expected"
+    assert len(unmappable_symbols) == 0

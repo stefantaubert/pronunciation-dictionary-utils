@@ -6,9 +6,8 @@ from pronunciation_dictionary import MultiprocessingOptions
 
 
 def test_with_changes() -> None:
-    # Data to be tested
     test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1), 
+                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
                                     (("A03", "NN", "HH"), 2)
                                     ]))])
     mappings = {
@@ -23,27 +22,23 @@ def test_with_changes() -> None:
     }
 
     expected_result = OrderedDict([("test", OrderedDict([
-                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."), 1), 
+                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."), 1),
                                     (("A03", "NN", "HH"), 2)]))])
-    
-    # Mock object necessary for mapping
+
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
-    # Mapping
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    changed_words = identify_and_apply_mappings(None, None, result, mappings, partial_mapping_flag, mp_options)
+    changed_words = identify_and_apply_mappings(
+        None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    # Comparisons
-    assert len(changed_words) == 1 and "test" in changed_words, \
-        f"Expected changes to words have not been made."
-    assert result == expected_result, f"Resulting dictionary with changes without partial flag is not as expected."
+    assert len(changed_words) == 1 and "test" in changed_words
+    assert result == expected_result
 
 
 def test_with_whitespaces() -> None:
-    # Data to be tested
     test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1), 
+                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
                                     (("A03", "NN", "HH"), 2)
                                     ]))])
     mappings = {
@@ -58,27 +53,23 @@ def test_with_whitespaces() -> None:
     }
 
     expected_result = OrderedDict([("test", OrderedDict([
-                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌe", "ɪ", "."), 1), 
+                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌe", "ɪ", "."), 1),
                                     (("A03", "NN", "HH"), 2)]))])
-    
-    # Mock object necessary for mapping
+
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
-    # Mapping
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    changed_words = identify_and_apply_mappings(None, None, result, mappings, partial_mapping_flag, mp_options)
+    changed_words = identify_and_apply_mappings(
+        None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    # Comparisons
-    assert len(changed_words) == 1 and "test" in changed_words, \
-        f"Expected changes to words have not been made."
-    assert result == expected_result, f"Resulting dictionary with changes without partial flag is not as expected."
+    assert len(changed_words) == 1 and "test" in changed_words
+    assert result == expected_result
 
 
 def test_without_changes() -> None:
-    # Data to be tested
     test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1), 
+                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
                                     (("A03", "NN", "HH"), 2)
                                     ]))])
     mappings = {
@@ -89,39 +80,33 @@ def test_without_changes() -> None:
     }
 
     expected_result = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1), 
+                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
                                     (("A03", "NN", "HH"), 2)
                                     ]))])
-    
-    # Mock object necessary for mapping
+
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
-    # Mapping
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    changed_words = identify_and_apply_mappings(None, None, result, mappings, partial_mapping_flag, mp_options)
+    changed_words = identify_and_apply_mappings(
+        None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    # Comparisons
-    assert len(changed_words) == 0 and "test" not in changed_words, \
-        f"Some words have been unexpectedly changed."
-    assert result == expected_result, f"Resulting dictionary without changes without partial flag is not as expected."
+    assert len(changed_words) == 0 and "test" not in changed_words
+    assert result == expected_result
 
 
 def test_empty() -> None:
-    # Data to be tested
     test_dictionary = OrderedDict()
     mappings = {}
 
     expected_result = OrderedDict()
 
-    # Mock object necessary for mapping
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
-    # Mapping
     partial_mapping_flag = False
     result = test_dictionary.copy()
-    changed_words = identify_and_apply_mappings(None, None, result, mappings, partial_mapping_flag, mp_options)
+    changed_words = identify_and_apply_mappings(
+        None, None, result, mappings, partial_mapping_flag, mp_options)
 
-    # Comparisons
-    assert len(changed_words) == 0, f"Some words have been unexpectedly changed."
-    assert result == expected_result, f"Resulting dictionary without changes without partial flag is not as expected."
+    assert len(changed_words) == 0
+    assert result == expected_result
