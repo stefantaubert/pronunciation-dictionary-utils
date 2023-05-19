@@ -11,10 +11,10 @@ def test_symbols_found():
 
     mappable_symbols = get_mappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    #for i in range(len(mappable_symbols)):
-        #assert expected_mappable_symbols[i] == mappable_symbols[i]
-    for x in mappable_symbols:
-        assert x in expected_mappable_symbols
+    for i in range(len(mappable_symbols)):
+        assert expected_mappable_symbols[i] == mappable_symbols[i]
+    #for x in mappable_symbols:
+    #    assert x in expected_mappable_symbols
 
 
 def test_symbols_not_found():
