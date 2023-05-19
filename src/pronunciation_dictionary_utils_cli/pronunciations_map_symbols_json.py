@@ -18,7 +18,7 @@ from functools import partial
 import json
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Dict, List, Set
+from typing import Optional, Dict, List, Set
 
 from ordered_set import OrderedSet
 from tqdm import tqdm
@@ -147,6 +147,24 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
   return changed_words_total
 
 
+def try_load_mappings(flogger: Logger, mapping: str, encoding: str) -> Optional[Dict[str, str]]:
+  with open(mapping, "r", encoding=encoding) as mapping_file:
+    # warning: only last value saved for duplicate keys in file
+    try:
+      mappings = json.load(mapping_file)
+    except (JSONDecodeError, TypeError):
+      flogger.info("No or invalid content in mapping file.")
+      return None
+    if not isinstance(mappings, dict):
+      flogger.info("No dictionary found in mapping file.")
+      return None
+    for key, value in mappings.items():
+      if not isinstance(key, str) or not isinstance(value, str):
+        flogger.info("Keys or values in mapping file are not of type string.")
+        return None
+    return mappings
+
+
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   """
   Loads the dictionary and the mapping file and sends them for mapping, logs and saves the results.
@@ -161,20 +179,9 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
     return False
   logger.info(f"Loaded dictionary containing {len(dictionary_instance)} entries.")
 
-  with open(ns.mapping, "r", encoding=ns.encoding) as mapping_file:
-    # warning: only last value saved for duplicate keys in file
-    try:
-      mappings = json.load(mapping_file)
-    except (JSONDecodeError, TypeError):
-      flogger.info("No or invalid content in mapping file.")
-      return False
-    if not isinstance(mappings, dict):
-      flogger.info("No dictionary found in mapping file.")
-      return False
-    for key, value in mappings.items():
-      if not isinstance(key, str) or not isinstance(value, str):
-        flogger.info("Keys or values in mapping file are not of type string.")
-        return False
+  mappings = try_load_mappings(flogger, ns.mapping, ns.encoding)
+  if mappings is None:
+    return False
   logger.info(f"Loaded mapping containing {len(mappings)} entries.")
 
   changed_words_total = identify_and_apply_mappings(
