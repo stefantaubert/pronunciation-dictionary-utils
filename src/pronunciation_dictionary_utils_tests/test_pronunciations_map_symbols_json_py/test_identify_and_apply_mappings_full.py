@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from logging import getLogger
 
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import identify_and_apply_mappings
 
@@ -26,11 +27,13 @@ def test_with_changes() -> None:
                                     (("A03", "NN", "HH"), 2)]))])
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+    logger = getLogger()
+    flogger = getLogger()
 
     partial_mapping_flag = False
     result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        None, None, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == {"test"}
     assert result == expected_result
@@ -57,11 +60,13 @@ def test_with_whitespaces() -> None:
                                     (("A03", "NN", "HH"), 2)]))])
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+    logger = getLogger()
+    flogger = getLogger()
 
     partial_mapping_flag = False
     result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        None, None, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == {"test"}
     assert result == expected_result
@@ -85,11 +90,13 @@ def test_without_changes() -> None:
                                     ]))])
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+    logger = getLogger()
+    flogger = getLogger()
 
     partial_mapping_flag = False
     result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        None, None, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == set()
     assert result == expected_result
@@ -102,11 +109,13 @@ def test_empty() -> None:
     expected_result = OrderedDict()
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+    logger = getLogger()
+    flogger = getLogger()
 
     partial_mapping_flag = False
     result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        None, None, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
 
     assert len(changed_words) == 0
     assert result == expected_result

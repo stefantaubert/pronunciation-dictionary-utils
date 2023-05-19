@@ -18,7 +18,7 @@ from functools import partial
 import json
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Optional, Dict, List, Set
+from typing import Dict, List, Set
 
 from ordered_set import OrderedSet
 from tqdm import tqdm
@@ -126,10 +126,9 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
   unmappable_symbols = get_unmappable_symbols(
     unique_sounds_in_dictionary, unique_sounds_in_mappings)
 
-  if logger and flogger:
-    logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
-    flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
-    flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
+  logger.info(f"Found {len(mappable_symbols)} applicable phoneme mappings.")
+  flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
+  flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
   #sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
   
