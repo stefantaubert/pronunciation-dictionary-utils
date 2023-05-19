@@ -54,13 +54,10 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser) -> Namesp
 def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
   """
   Returns a list of unique symbols that occur both in the passed dictionary and the mappings. 
-  # TODO sorting
   """
   mappable_symbols = []
   mappable_symbols = [
     symbol for symbol in sounds_in_dictionary if symbol in sounds_in_mappings and symbol not in mappable_symbols]
-  #sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
-  #return sorted_mappable_symbols
   return mappable_symbols
 
 
