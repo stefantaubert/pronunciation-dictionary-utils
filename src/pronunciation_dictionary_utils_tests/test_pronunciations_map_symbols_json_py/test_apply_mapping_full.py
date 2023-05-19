@@ -31,11 +31,12 @@ def test_with_changes() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
+    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     changed_words_total = set()
-    for mappable_symbol in mappable_symbols:
+    for mappable_symbol in sorted_mappable_symbols:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
@@ -68,11 +69,12 @@ def test_with_whitespaces() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
+    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     changed_words_total = set()
-    for mappable_symbol in mappable_symbols:
+    for mappable_symbol in sorted_mappable_symbols:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
@@ -103,7 +105,7 @@ def test_without_changes() -> None:
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
     sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
-
+    
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     changed_words_total = set()
@@ -126,11 +128,12 @@ def test_empty() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
+    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     changed_words_total = set()
-    for mappable_symbol in mappable_symbols:
+    for mappable_symbol in sorted_mappable_symbols:
         changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
