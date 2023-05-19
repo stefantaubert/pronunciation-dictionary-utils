@@ -10,8 +10,6 @@ def test_symbols_found():
   expected_unmappable_symbols = ["A03", "AA1", "AO3", "HH", "NN", "."]
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  #for i in range(len(unmappable_symbols)):
-  #    assert expected_unmappable_symbols[i] == unmappable_symbols[i]
   for x in unmappable_symbols:
     assert x in expected_unmappable_symbols
 

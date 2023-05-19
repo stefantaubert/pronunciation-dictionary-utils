@@ -7,14 +7,13 @@ def test_symbols_found():
     sounds_in_dictionary = {"AO", "AO2", "AO3", "AA1", "EY2", ".", "A03", "NN", "HH"}
     sounds_in_mappings = {"EY1", "EY", "AO1", "EY0", "AO", "AO0", "AO2", "EY2"}
 
-    expected_mappable_symbols = ["AO2", "EY2", "AO"]
+    expected_sorted_mappable_symbols = ["AO2", "EY2", "AO"]
 
     mappable_symbols = get_mappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-    for i in range(len(mappable_symbols)):
-        assert expected_mappable_symbols[i] == mappable_symbols[i]
-    #for x in mappable_symbols:
-    #    assert x in expected_mappable_symbols
+    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    for i in range(len(sorted_mappable_symbols)):
+        assert expected_sorted_mappable_symbols[i] == sorted_mappable_symbols[i]
 
 
 def test_symbols_not_found():

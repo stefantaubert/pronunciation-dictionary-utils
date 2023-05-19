@@ -59,9 +59,9 @@ def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set
   mappable_symbols = []
   mappable_symbols = [
     symbol for symbol in sounds_in_dictionary if symbol in sounds_in_mappings and symbol not in mappable_symbols]
-  sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
-  return sorted_mappable_symbols
-  #return mappable_symbols
+  #sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+  #return sorted_mappable_symbols
+  return mappable_symbols
 
 
 def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
@@ -130,8 +130,6 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
   flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
   flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
-  #sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
-  
   changed_words_total = set()
   if mappable_symbols:
     mapping_method = partial(
@@ -140,7 +138,10 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
       mappings=mappings,
       mp_options=mp_options
     )
-    for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+    
+    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    
+    for mappable_symbol in tqdm(sorted_mappable_symbols, total=len(sorted_mappable_symbols), desc="Mapping"):
       changed_words = mapping_method(mappable_symbol=mappable_symbol)
       changed_words_total |= changed_words
 
