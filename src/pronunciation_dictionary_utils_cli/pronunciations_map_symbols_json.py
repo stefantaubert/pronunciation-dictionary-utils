@@ -155,14 +155,14 @@ def try_load_mappings(flogger: Logger, mapping: str, encoding: str) -> Optional[
     except (JSONDecodeError, TypeError):
       flogger.info("No or invalid content in mapping file.")
       return None
-    if not isinstance(mappings, dict):
-      flogger.info("No dictionary found in mapping file.")
+  if not isinstance(mappings, dict):
+    flogger.info("No dictionary found in mapping file.")
+    return None
+  for key, value in mappings.items():
+    if not isinstance(key, str) or not isinstance(value, str):
+      flogger.info("Keys or values in mapping file are not of type string.")
       return None
-    for key, value in mappings.items():
-      if not isinstance(key, str) or not isinstance(value, str):
-        flogger.info("Keys or values in mapping file are not of type string.")
-        return None
-    return mappings
+  return mappings
 
 
 def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
