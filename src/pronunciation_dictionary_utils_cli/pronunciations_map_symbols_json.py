@@ -54,27 +54,24 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser) -> Namesp
 def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
   """
   Returns a list of unique symbols that occur both in the passed dictionary and the mappings. 
-  The returned symbols are sorted in descending order by length, where elements with 
-  the same length are sorted alphabetically in ascending order among themselves.
+  # TODO sorting
   """
   mappable_symbols = []
   mappable_symbols = [
     symbol for symbol in sounds_in_dictionary if symbol in sounds_in_mappings and symbol not in mappable_symbols]
-  sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
-  return sorted_mappable_symbols
+  #sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+  #return sorted_mappable_symbols
+  return mappable_symbols
 
 
 def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
   """
   Returns a list of unique symbols that occur in the dictionary but not in the mappings.
-  The returned symbols are sorted in descending order by length, where elements with 
-  the same length are sorted alphabetically in ascending order among themselves.
   """
   unmappable_symbols = []
   unmappable_symbols = [
     symbol for symbol in sounds_in_dictionary if symbol not in sounds_in_mappings and symbol not in unmappable_symbols]
-  sorted_unmappable_symbols = sorted(unmappable_symbols, key=lambda x: (-len(x), x))
-  return sorted_unmappable_symbols
+  return unmappable_symbols
 
 
 def apply_mapping_partial(dictionary: PronunciationDict, mappings: Dict[str, str], mappable_symbol: str,
@@ -134,15 +131,17 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
     flogger.info(f"Mapped phonemes in dictionary: {' '.join(sorted(mappable_symbols))}")
     flogger.info(f"Unmapped phonemes in dictionary: {' '.join(sorted(unmappable_symbols))}")
 
+  sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+  
   changed_words_total = set()
-  if mappable_symbols:
+  if sorted_mappable_symbols:
     mapping_method = partial(
       apply_mapping_partial if partial_mapping else apply_mapping_full,
       dictionary=dictionary,
       mappings=mappings,
       mp_options=mp_options
     )
-    for mappable_symbol in tqdm(mappable_symbols, total=len(mappable_symbols), desc="Mapping"):
+    for mappable_symbol in tqdm(sorted_mappable_symbols, total=len(sorted_mappable_symbols), desc="Mapping"):
       changed_words = mapping_method(mappable_symbol=mappable_symbol)
       changed_words_total |= changed_words
 

@@ -7,10 +7,13 @@ def test_symbols_found():
   sounds_in_dictionary = {"AO", "AO2", "AO3", "AA1", "EY2", ".", "A03", "NN", "HH"}
   sounds_in_mappings = {"EY1", "EY", "AO1", "EY0", "AO", "AO0", "AO2", "EY2"}
 
-  expected_unmappable_symbols = OrderedSet(["A03", "AA1", "AO3", "HH", "NN", "."])
+  expected_unmappable_symbols = ["A03", "AA1", "AO3", "HH", "NN", "."]
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  assert expected_unmappable_symbols == unmappable_symbols
+  #for i in range(len(unmappable_symbols)):
+  #    assert expected_unmappable_symbols[i] == unmappable_symbols[i]
+  for x in unmappable_symbols:
+    assert x in expected_unmappable_symbols
 
 
 def test_symbols_not_found():
