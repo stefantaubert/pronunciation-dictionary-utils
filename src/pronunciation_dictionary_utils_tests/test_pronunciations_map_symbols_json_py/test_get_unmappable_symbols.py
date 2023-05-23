@@ -1,5 +1,3 @@
-from ordered_set import OrderedSet
-
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import get_unmappable_symbols
 
 
@@ -8,7 +6,7 @@ def test_symbols_found():
   sounds_in_mappings = {"EY1", "EY", "AO1", "EY0", "AO", "AO0", "AO2", "EY2"}
 
   expected_unmappable_symbols = {"A03", "AA1", "AO3", "HH", "NN", "."}
-  unmappable_symbols = set(get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings))
+  unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
   assert unmappable_symbols == expected_unmappable_symbols
 
@@ -19,7 +17,7 @@ def test_symbols_not_found():
 
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  assert unmappable_symbols == list()
+  assert unmappable_symbols == set()
 
 
 def test_empty():
@@ -28,4 +26,4 @@ def test_empty():
 
   unmappable_symbols = get_unmappable_symbols(sounds_in_dictionary, sounds_in_mappings)
 
-  assert unmappable_symbols == list()
+  assert unmappable_symbols == set()

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from ordered_set import OrderedSet
 import pytest
 
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (
@@ -32,7 +33,7 @@ def test_with_changes() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
-    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
@@ -52,7 +53,7 @@ def test_with_whitespaces() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
-    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
@@ -83,7 +84,7 @@ def test_without_changes() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
-    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
@@ -107,7 +108,7 @@ def test_empty() -> None:
     unique_sounds_in_dictionary = get_phoneme_set(result)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
-    sorted_mappable_symbols = sorted(mappable_symbols, key=lambda x: (-len(x), x))
+    sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
 
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
