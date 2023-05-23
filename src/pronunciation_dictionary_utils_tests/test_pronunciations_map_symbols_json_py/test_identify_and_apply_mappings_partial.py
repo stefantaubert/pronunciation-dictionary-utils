@@ -49,9 +49,9 @@ def test_with_whitespaces() -> None:
     flogger = getLogger()
 
     partial_mapping_flag = True
-    with pytest.raises(Exception):
-        changed_words = identify_and_apply_mappings(
-            logger, flogger, test_dictionary, mappings, partial_mapping_flag, mp_options)
+    with pytest.raises(Exception) as expected_exception:
+        identify_and_apply_mappings(logger, flogger, test_dictionary, mappings, partial_mapping_flag, mp_options)
+    assert str(expected_exception.value) == "Whitespaces in mappings aren't supported with partial mapping."
 
 
 def test_without_changes() -> None:

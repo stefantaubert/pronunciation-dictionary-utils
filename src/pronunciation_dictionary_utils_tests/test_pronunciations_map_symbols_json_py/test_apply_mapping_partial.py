@@ -57,9 +57,8 @@ def test_with_whitespaces() -> None:
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
     with pytest.raises(Exception) as expected_exception:
-        changed_words = apply_mapping_partial(
-            test_dictionary, mappings, sorted_mappable_symbols[0], mp_options)
-        assert str(expected_exception) == "Whitespaces in mappings aren't supported with partial mapping."
+        apply_mapping_partial(test_dictionary, mappings, sorted_mappable_symbols[0], mp_options)
+    assert str(expected_exception.value) == "Whitespaces in mappings aren't supported with partial mapping."
 
 
 def test_without_changes() -> None:
