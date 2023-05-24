@@ -7,25 +7,35 @@ from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import (
 from pronunciation_dictionary import (MultiprocessingOptions, get_phoneme_set)
 
 
-def test_with_changes() -> None:
-    test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
-                                    (("A03", "NN", "HH"), 2)
-                                    ]))])
-    mappings = {
-        "EY1": "ˈeɪ",
-        "EY": "eɪ",
-        "AO1": "ˈɔ",
-        "EY0": "eɪ",
-        "AO": "ɔ",
-        "AO0": "ɔ",
-        "AO2": "ˌɔ",
-        "EY2": "ˌeɪ"
-    }
+def test_with_changes_partial_unavailable() -> None:
+    test_dictionary = OrderedDict([("test", OrderedDict([((("AO2"),), 1)]))])
+    mappings = {"AO2": "ˌɔ"}
 
-    expected_result = OrderedDict([("test", OrderedDict([
-                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌeɪ", "."), 1),
-                                    (("A03", "NN", "HH"), 2)]))])
+    expected_result = OrderedDict([("test", OrderedDict([((("ˌɔ"),), 1)]))])
+
+    result = test_dictionary.copy()
+
+    unique_sounds_in_dictionary = get_phoneme_set(result)
+    unique_sounds_in_mappings = set(mappings.keys())
+    mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
+    sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
+
+    mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
+
+    changed_words_total = set()
+    for mappable_symbol in sorted_mappable_symbols:
+        changed_words = apply_mapping_full(result, mappings, mappable_symbol, mp_options)
+        changed_words_total |= changed_words
+
+    assert changed_words_total == {"test"}
+    assert result == expected_result
+
+
+def test_without_changes_partial_available() -> None:
+    test_dictionary = OrderedDict([("test", OrderedDict([((("AO2"),), 1)]))])
+    mappings = {"AO": "ɔ", "AO2": "ˌɔ"}
+
+    expected_result = OrderedDict([("test", OrderedDict([((("ˌɔ"),), 1)]))])
 
     result = test_dictionary.copy()
 
@@ -46,24 +56,10 @@ def test_with_changes() -> None:
 
 
 def test_with_whitespaces() -> None:
-    test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
-                                    (("A03", "NN", "HH"), 2)
-                                    ]))])
-    mappings = {
-        "EY1": "ˈeɪ",
-        "EY": "eɪ",
-        "AO1": "ˈɔ",
-        "EY0": "eɪ",
-        "AO": "ɔ",
-        "AO0": "ɔ",
-        "AO2": "ˌɔ",
-        "EY2": "ˌe ɪ"
-    }
+    test_dictionary = OrderedDict([("test", OrderedDict([((("EY2"),), 1)]))])
+    mappings = {"EY2": "ˌe ɪ"}
 
-    expected_result = OrderedDict([("test", OrderedDict([
-                                    (("ɔ", "ˌɔ", "AO3", "AA1", "ˌe", "ɪ", "."), 1),
-                                    (("A03", "NN", "HH"), 2)]))])
+    expected_result = OrderedDict([("test", OrderedDict([(("ˌe", "ɪ"), 1)]))])
 
     result = test_dictionary.copy()
 
@@ -84,21 +80,10 @@ def test_with_whitespaces() -> None:
 
 
 def test_without_changes() -> None:
-    test_dictionary = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
-                                    (("A03", "NN", "HH"), 2)
-                                    ]))])
-    mappings = {
-        "V": "v",
-        "F": "f",
-        "D": "d",
-        "MM": "m"
-    }
+    test_dictionary = OrderedDict([("test", OrderedDict([((("EY2"),), 1)]))])
+    mappings = {"V": "v"}
 
-    expected_result = OrderedDict([("test", OrderedDict([
-                                    (("AO", "AO2", "AO3", "AA1", "EY2", "."), 1),
-                                    (("A03", "NN", "HH"), 2)
-                                    ]))])
+    expected_result = OrderedDict([("test", OrderedDict([((("EY2"),), 1)]))])
 
     result = test_dictionary.copy()
 
