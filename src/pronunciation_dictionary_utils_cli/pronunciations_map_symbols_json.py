@@ -50,32 +50,12 @@ def get_pronunciations_map_symbols_json_parser(parser: ArgumentParser) -> Namesp
   add_mp_group(parser)
   return map_symbols_in_pronunciations_ns
 
-'''
-def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
-  """
-  Returns a list of unique symbols that occur both in the passed dictionary and the mappings. 
-  """
-  mappable_symbols = []
-  mappable_symbols = [
-    symbol for symbol in sounds_in_dictionary if symbol in sounds_in_mappings and symbol not in mappable_symbols]
-  return mappable_symbols
-
-
-def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> List[str]:
-  """
-  Returns a list of unique symbols that occur in the dictionary but not in the mappings.
-  """
-  unmappable_symbols = []
-  unmappable_symbols = [
-    symbol for symbol in sounds_in_dictionary if symbol not in sounds_in_mappings and symbol not in unmappable_symbols]
-  return unmappable_symbols
-'''
 
 def get_mappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: Set[str]) -> Set[str]:
   """
   Returns a list of unique symbols that occur both in the passed dictionary and the mappings. 
   """
-  mappable_symbols = set(sounds_in_dictionary & sounds_in_mappings)
+  mappable_symbols = sounds_in_dictionary & sounds_in_mappings
   return mappable_symbols
 
 
@@ -83,7 +63,7 @@ def get_unmappable_symbols(sounds_in_dictionary: Set[str], sounds_in_mappings: S
   """
   Returns a list of unique symbols that occur in the dictionary but not in the mappings.
   """
-  unmappable_symbols = set(sounds_in_dictionary - sounds_in_mappings)
+  unmappable_symbols = sounds_in_dictionary - sounds_in_mappings
   return unmappable_symbols
 
 
