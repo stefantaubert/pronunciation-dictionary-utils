@@ -7,9 +7,9 @@ from pronunciation_dictionary import MultiprocessingOptions
 
 
 def test_with_changes() -> None:
-    test_dictionary = OrderedDict([("test", OrderedDict([((("AO2"),), 1)]))])
+    test_dictionary = OrderedDict([("test", OrderedDict([(("AO2",), 1)]))])
     mappings = {"AO": "ɔ"}
-    expected_result = OrderedDict([("test", OrderedDict([((("ɔ2"),), 1)]))])
+    expected_result = OrderedDict([("test", OrderedDict([(("ɔ2",), 1)]))])
     mappable_symbol = "AO"
     mp_options = MultiprocessingOptions(n_jobs=4, maxtasksperchild=100, chunksize=10)
 
