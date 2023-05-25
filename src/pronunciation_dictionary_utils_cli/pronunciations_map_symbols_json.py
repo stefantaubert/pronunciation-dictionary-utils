@@ -18,7 +18,7 @@ from functools import partial
 import json
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Optional, Dict, List, Set
+from typing import Optional, Dict, Set
 
 from ordered_set import OrderedSet
 from tqdm import tqdm
