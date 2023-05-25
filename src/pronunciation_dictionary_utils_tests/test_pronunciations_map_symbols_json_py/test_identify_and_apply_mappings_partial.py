@@ -32,12 +32,11 @@ def test_with_changes() -> None:
     flogger = getLogger()
 
     partial_mapping_flag = True
-    result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, test_dictionary, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == {"test"}
-    assert result == expected_result
+    assert test_dictionary == expected_result
 
 
 def test_with_whitespaces() -> None:
@@ -76,12 +75,11 @@ def test_without_changes() -> None:
     flogger = getLogger()
 
     partial_mapping_flag = True
-    result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, test_dictionary, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == set()
-    assert result == expected_result
+    assert test_dictionary == expected_result
 
 
 def test_empty() -> None:
@@ -95,9 +93,8 @@ def test_empty() -> None:
     flogger = getLogger()
 
     partial_mapping_flag = True
-    result = test_dictionary.copy()
     changed_words = identify_and_apply_mappings(
-        logger, flogger, result, mappings, partial_mapping_flag, mp_options)
+        logger, flogger, test_dictionary, mappings, partial_mapping_flag, mp_options)
 
     assert changed_words == set()
-    assert result == expected_result
+    assert test_dictionary == expected_result

@@ -28,9 +28,7 @@ def test_with_changes() -> None:
                                     (("ɔ", "ˌɔ", "ɔ3", "AA1", "ˌeɪ", "."), 1),
                                     (("A03", "NN", "HH"), 2)]))])
 
-    result = test_dictionary.copy()
-
-    unique_sounds_in_dictionary = get_phoneme_set(result)
+    unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
     sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
@@ -39,11 +37,11 @@ def test_with_changes() -> None:
 
     changed_words_total = set()
     for mappable_symbol in sorted_mappable_symbols:
-        changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
+        changed_words = apply_mapping_partial(test_dictionary, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
     assert changed_words_total == {"test"}
-    assert result == expected_result
+    assert test_dictionary == expected_result
 
 
 def test_with_whitespaces() -> None:
@@ -79,9 +77,7 @@ def test_without_changes() -> None:
                                     (("A03", "NN", "HH"), 2)
                                     ]))])
 
-    result = test_dictionary.copy()
-
-    unique_sounds_in_dictionary = get_phoneme_set(result)
+    unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
     sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
@@ -90,11 +86,11 @@ def test_without_changes() -> None:
 
     changed_words_total = set()
     for mappable_symbol in sorted_mappable_symbols:
-        changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
+        changed_words = apply_mapping_partial(test_dictionary, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
     assert changed_words_total == set()
-    assert result == expected_result
+    assert test_dictionary == expected_result
 
 
 def test_empty() -> None:
@@ -103,9 +99,7 @@ def test_empty() -> None:
 
     expected_result = OrderedDict()
 
-    result = test_dictionary.copy()
-
-    unique_sounds_in_dictionary = get_phoneme_set(result)
+    unique_sounds_in_dictionary = get_phoneme_set(test_dictionary)
     unique_sounds_in_mappings = set(mappings.keys())
     mappable_symbols = get_mappable_symbols(unique_sounds_in_dictionary, unique_sounds_in_mappings)
     sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
@@ -114,8 +108,8 @@ def test_empty() -> None:
 
     changed_words_total = set()
     for mappable_symbol in sorted_mappable_symbols:
-        changed_words = apply_mapping_partial(result, mappings, mappable_symbol, mp_options)
+        changed_words = apply_mapping_partial(test_dictionary, mappings, mappable_symbol, mp_options)
         changed_words_total |= changed_words
 
     assert changed_words_total == set()
-    assert result == expected_result
+    assert test_dictionary == expected_result
