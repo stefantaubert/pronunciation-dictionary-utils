@@ -1,9 +1,10 @@
 from collections import OrderedDict
 from logging import getLogger
 
-from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import identify_and_apply_mappings
-
 from pronunciation_dictionary import MultiprocessingOptions
+
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import \
+  identify_and_apply_mappings
 
 
 def test_with_changes() -> None:

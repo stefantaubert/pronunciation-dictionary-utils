@@ -13,23 +13,23 @@ optional arguments:
   -pm, --partial-mapping                map symbols inside a symbol
 """
 
+import json
 from argparse import ArgumentParser, Namespace
 from functools import partial
-import json
 from json.decoder import JSONDecodeError
 from logging import Logger
-from typing import Optional, Dict, Set
+from typing import Dict, Optional, Set
 
 from ordered_set import OrderedSet
+from pronunciation_dictionary import (DeserializationOptions, MultiprocessingOptions,
+                                      SerializationOptions, get_phoneme_set)
+from pronunciation_dictionary.types import PronunciationDict
 from tqdm import tqdm
 
-from pronunciation_dictionary import (
-  DeserializationOptions, MultiprocessingOptions, SerializationOptions, get_phoneme_set)
-from pronunciation_dictionary.types import PronunciationDict
 from pronunciation_dictionary_utils import map_symbols
 from pronunciation_dictionary_utils_cli.argparse_helper import (add_encoding_argument, add_io_group,
                                                                 add_mp_group, parse_existing_file)
-from pronunciation_dictionary_utils_cli.io import (try_load_dict, try_save_dict)
+from pronunciation_dictionary_utils_cli.io import try_load_dict, try_save_dict
 
 DEFAULT_EMPTY_WEIGHT = 1.0
 

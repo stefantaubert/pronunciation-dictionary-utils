@@ -1,8 +1,8 @@
 from collections import OrderedDict
 
-from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import apply_mapping_full
-
 from pronunciation_dictionary import MultiprocessingOptions
+
+from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import apply_mapping_full
 
 
 def test_with_changes() -> None:

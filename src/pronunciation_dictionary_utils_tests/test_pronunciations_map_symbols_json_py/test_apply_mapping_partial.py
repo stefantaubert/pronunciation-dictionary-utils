@@ -1,9 +1,9 @@
 from collections import OrderedDict
+
 import pytest
+from pronunciation_dictionary import MultiprocessingOptions
 
 from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import apply_mapping_partial
-
-from pronunciation_dictionary import MultiprocessingOptions
 
 
 def test_with_changes() -> None:
