@@ -7,13 +7,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pronunciation-dictionary-utils"
-version = "0.0.3"
+version = "0.0.4"
 description = "CLI and library to modify pronunciation dictionaries (any language)."
 readme = "README.md"
-requires-python = ">=3.8, <3.12"
+requires-python = ">=3.8, <4"
 license = {text = "MIT"}
 authors = [
-  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"}
+  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},
+  {name = "Natalia Przybysz"}
 ]
 maintainers = [
   {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},

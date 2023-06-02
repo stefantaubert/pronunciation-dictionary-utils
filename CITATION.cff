@@ -12,8 +12,11 @@ authors:
     affiliation: Chemnitz University of Technology
     orcid: 'https://orcid.org/0000-0002-4932-2874'
     website: 'https://stefantaubert.com/'
-version: 0.0.3
-date-released: 2023-01-12
+  - given-names: Natalia
+    family-names: Przybysz
+    affiliation: Chemnitz University of Technology
+version: 0.0.4
+date-released: 2023-06-02
 license: MIT
 url: https://github.com/stefantaubert/pronunciation-dictionary-utils
-doi: 10.5281/zenodo.7529307
+doi: 10.5281/zenodo.7997799
