@@ -53,7 +53,7 @@ def remove_symbols_from_pronunciations_ns(ns: Namespace, logger: Logger, flogger
     return False
 
   removed_words, changed_counter = remove_symbols_from_pronunciations(
-    dictionary_instance, ns.symbols, ns.mode, ns.keep_empty, ns.empty_symbol, mp_options)
+    dictionary_instance, ns.symbols, ns.mode, ns.keep_empty, ns.empty_symbol, mp_options, silent=False)
 
   if changed_counter == 0:
     logger.info("Didn't change anything.")

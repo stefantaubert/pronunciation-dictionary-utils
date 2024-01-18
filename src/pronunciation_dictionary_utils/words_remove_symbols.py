@@ -22,7 +22,7 @@ def __validate_symbols(symbols: str) -> Optional[str]:
   return None
 
 
-def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode: str, mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], OrderedSet[Word]]:
+def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode: str, mp_options: MultiprocessingOptions, silent: bool = False) -> Tuple[OrderedSet[Word], OrderedSet[Word]]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := __validate_symbols(symbols):
@@ -47,7 +47,7 @@ def remove_symbols_from_words(dictionary: PronunciationDict, symbols: str, mode:
   ) as pool:
     entries = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    new_words_to_words = dict(tqdm(iterator, total=len(entries), unit="words"))
+    new_words_to_words = dict(tqdm(iterator, total=len(entries), unit="words", disable=silent))
 
   removed_words_entirely = OrderedSet()
   removed_words = OrderedSet()

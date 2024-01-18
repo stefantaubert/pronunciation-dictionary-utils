@@ -42,7 +42,7 @@ def map_symbols_in_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Log
 
   to_symbol = ns.to_symbol if ns.partial_mapping else [ns.to_symbol]
   changed_words = map_symbols(
-    dictionary_instance, ns.from_symbols, to_symbol, ns.partial_mapping, mp_options)
+    dictionary_instance, ns.from_symbols, to_symbol, ns.partial_mapping, mp_options, silent=False)
 
   if len(changed_words) == 0:
     logger.info("Didn't change anything.")

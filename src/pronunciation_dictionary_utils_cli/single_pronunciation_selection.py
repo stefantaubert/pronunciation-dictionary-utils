@@ -36,7 +36,7 @@ def remove_multiple_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Lo
     return False
 
   changed_counter = select_single_pronunciation(
-    dictionary_instance, ns.mode, ns.seed, mp_options)
+    dictionary_instance, ns.mode, ns.seed, mp_options, silent=False)
 
   if changed_counter == 0:
     logger.info("Didn't change anything.")

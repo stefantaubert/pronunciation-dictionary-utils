@@ -20,7 +20,7 @@ def __validate_mode(mode: str) -> Optional[str]:
   return None
 
 
-def remove_symbols_from_pronunciations(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], mode: str, keep_empty: bool, empty_symbol: Optional[Symbol], mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], int]:
+def remove_symbols_from_pronunciations(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], mode: str, keep_empty: bool, empty_symbol: Optional[Symbol], mp_options: MultiprocessingOptions, silent: bool = False) -> Tuple[OrderedSet[Word], int]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(symbols, OrderedSet):
@@ -51,7 +51,7 @@ def remove_symbols_from_pronunciations(dictionary: PronunciationDict, symbols: O
   ) as pool:
     entries = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words"))
+    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words", disable=silent))
 
   changed_counter = 0
   removed_words = OrderedSet()

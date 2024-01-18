@@ -32,7 +32,7 @@ def change_casing_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool:
   if dictionary_instance is None:
     return False
 
-  removed_words, created_words = change_word_casing(dictionary_instance, ns.mode, mp_options)
+  removed_words, created_words = change_word_casing(dictionary_instance, ns.mode, mp_options, silent=False)
 
   if len(removed_words) == 0:
     logger.info("Didn't change anything.")

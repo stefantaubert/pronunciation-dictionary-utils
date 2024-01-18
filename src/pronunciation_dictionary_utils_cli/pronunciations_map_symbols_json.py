@@ -81,7 +81,7 @@ def apply_mapping_partial(dictionary: PronunciationDict, mappings: Dict[str, str
     raise Exception("Whitespaces in mappings aren't supported with partial mapping.")
 
   changed_words = map_symbols(dictionary, from_symbol, to_phonemes,
-                              True, mp_options, use_tqdm=False)
+                              True, mp_options, silent=True)
 
   return changed_words
 
@@ -101,7 +101,7 @@ def apply_mapping_full(dictionary: PronunciationDict, mappings: Dict[str, str], 
   to_phonemes = [p for p in to_phonemes if len(p) > 0]
 
   changed_words = map_symbols(dictionary, from_symbol, to_phonemes,
-                              False, mp_options, use_tqdm=False)
+                              False, mp_options, silent=True)
 
   return changed_words
 
@@ -131,7 +131,7 @@ def identify_and_apply_mappings(logger: Logger, flogger: Logger, dictionary: Pro
       mappings=mappings,
       mp_options=mp_options
     )
-    
+
     sorted_mappable_symbols = OrderedSet(sorted(mappable_symbols, key=len, reverse=True))
 
     for mappable_symbol in tqdm(sorted_mappable_symbols, total=len(sorted_mappable_symbols), desc="Mapping"):

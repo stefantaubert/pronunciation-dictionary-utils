@@ -48,7 +48,7 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
   mp_options = MultiprocessingOptions(ns.n_jobs, ns.maxtasksperchild, ns.chunksize)
 
   removed_words_entirely, changed_words = remove_symbols_from_vocabulary(
-    vocabulary, symbols_str, ns.mode, mp_options)
+    vocabulary, symbols_str, ns.mode, mp_options, silent=False)
 
   if len(changed_words) == 0:
     logger.info("Didn't change anything.")

@@ -2,7 +2,7 @@ import re
 from collections import OrderedDict
 from functools import partial
 from multiprocessing.pool import Pool
-from typing import Generator, Iterable, Literal, Optional, Set, Tuple
+from typing import Optional, Tuple
 
 from ordered_set import OrderedSet
 from pronunciation_dictionary import (MultiprocessingOptions, PronunciationDict, Pronunciations,
@@ -18,7 +18,7 @@ DEFAULT_EMPTY_WEIGHT = 1
 DEFAULT_EMPTY_WEIGHT = 1
 
 
-def replace_symbols_in_pronunciations(dictionary: PronunciationDict, text: str, replace_with: str, keep_empty: bool, empty_symbol: Optional[Symbol], mp_options: MultiprocessingOptions) -> Tuple[OrderedSet[Word], int]:
+def replace_symbols_in_pronunciations(dictionary: PronunciationDict, text: str, replace_with: str, keep_empty: bool, empty_symbol: Optional[Symbol], mp_options: MultiprocessingOptions, silent: bool = False) -> Tuple[OrderedSet[Word], int]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(text, str):
@@ -51,7 +51,7 @@ def replace_symbols_in_pronunciations(dictionary: PronunciationDict, text: str, 
   ) as pool:
     entries = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words"))
+    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words", disable=silent))
 
   changed_counter = 0
   removed_words = OrderedSet()

@@ -45,7 +45,7 @@ def __validate_mode(mode: str) -> Optional[str]:
   return None
 
 
-def select_single_pronunciation(dictionary: PronunciationDict, mode: SelectionMode, seed: Optional[int], mp_options: MultiprocessingOptions) -> int:
+def select_single_pronunciation(dictionary: PronunciationDict, mode: SelectionMode, seed: Optional[int], mp_options: MultiprocessingOptions, silent: bool = False) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := __validate_mode(mode):
@@ -69,7 +69,7 @@ def select_single_pronunciation(dictionary: PronunciationDict, mode: SelectionMo
   ) as pool:
     entries = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    new_pronunciations_to_words = dict(tqdm(iterator, total=len(entries), unit="words"))
+    new_pronunciations_to_words = dict(tqdm(iterator, total=len(entries), unit="words", disable=silent))
 
   changed_counter = 0
 

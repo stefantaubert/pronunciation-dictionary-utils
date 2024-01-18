@@ -30,7 +30,7 @@ def normalize_weights_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bool
   if dictionary_instance is None:
     return False
 
-  changed_counter = normalize_weights(dictionary_instance, mp_options)
+  changed_counter = normalize_weights(dictionary_instance, mp_options, silent=False)
 
   changed_anything = changed_counter > 0
 

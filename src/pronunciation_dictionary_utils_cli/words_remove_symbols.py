@@ -47,7 +47,7 @@ def remove_symbols_from_words_ns(ns: Namespace, logger: Logger, flogger: Logger)
     return False
 
   removed_words_entirely, removed_words = remove_symbols_from_words(
-    dictionary_instance, symbols_str, ns.mode, mp_options)
+    dictionary_instance, symbols_str, ns.mode, mp_options, silent=False)
 
   if len(removed_words) == 0:
     logger.info("Didn't change anything.")

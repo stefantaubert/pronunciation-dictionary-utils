@@ -19,7 +19,7 @@ def __validate_symbol(symbol: str) -> Optional[str]:
   return None
 
 
-def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, use_tqdm: bool = True) -> Set[str]:
+def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_to: Union[List[Symbol], Symbol], partial_mapping: bool, mp_options: MultiprocessingOptions, silent: bool = False) -> Set[str]:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_type(symbols, OrderedSet):
@@ -65,9 +65,8 @@ def map_symbols(dictionary: PronunciationDict, symbols: OrderedSet[Symbol], map_
     maxtasksperchild=mp_options.maxtasksperchild,
   ) as pool:
     all_words = OrderedSet(dictionary.keys())
-    iterator = pool.imap(process_method, all_words, mp_options.chunksize)
-    if use_tqdm:
-      iterator = tqdm(iterator, total=len(all_words), unit="words")
+    iterator = tqdm(pool.imap(process_method, all_words, mp_options.chunksize),
+                    total=len(all_words), unit="words", disable=silent)
     new_pronunciations_to_words = dict(iterator)
 
   changed_words = set()

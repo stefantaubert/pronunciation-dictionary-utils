@@ -10,7 +10,7 @@ from tqdm import tqdm
 from pronunciation_dictionary_utils.validation import validate_dictionary, validate_mp_options
 
 
-def normalize_weights(dictionary: PronunciationDict, mp_options: MultiprocessingOptions) -> int:
+def normalize_weights(dictionary: PronunciationDict, mp_options: MultiprocessingOptions, silent: bool = False) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := validate_mp_options(mp_options):
@@ -28,7 +28,7 @@ def normalize_weights(dictionary: PronunciationDict, mp_options: Multiprocessing
   ) as pool:
     entries = OrderedSet(dictionary.keys())
     iterator = pool.imap(process_method, entries, mp_options.chunksize)
-    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words"))
+    pronunciations_to_i = list(tqdm(iterator, total=len(entries), unit="words", disable=silent))
 
   changed_counter = 0
   for word, new_pronunciations in pronunciations_to_i:

@@ -17,7 +17,7 @@ def __validate_mode(mode: str) -> Optional[str]:
   return None
 
 
-def change_word_casing(dictionary: PronunciationDict, mode: str, mp_options: MultiprocessingOptions) -> int:
+def change_word_casing(dictionary: PronunciationDict, mode: str, mp_options: MultiprocessingOptions, silent: bool = False) -> int:
   if msg := validate_dictionary(dictionary):
     raise ValueError(f"Parameter 'dictionary': {msg}")
   if msg := __validate_mode(mode):
@@ -33,7 +33,7 @@ def change_word_casing(dictionary: PronunciationDict, mode: str, mp_options: Mul
     maxtasksperchild=mp_options.maxtasksperchild,
   ) as pool:
     iterator = pool.imap(process_method, dictionary.keys(), mp_options.chunksize)
-    new_words_to_words = dict(tqdm(iterator, total=len(dictionary), unit="words"))
+    new_words_to_words = dict(tqdm(iterator, total=len(dictionary), unit="words", disable=silent))
 
   new_words = OrderedDict((
     (k, new_word)

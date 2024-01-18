@@ -35,7 +35,7 @@ def sort_pronunciations_ns(ns: Namespace, logger: Logger, flogger: Logger) -> bo
     return False
 
   changed_counter = sort_pronunciations(
-    dictionary_instance, ns.descending, ns.ignore_weight, mp_options)
+    dictionary_instance, ns.descending, ns.ignore_weight, mp_options, silent=False)
 
   changed_anything = changed_counter > 0
 
