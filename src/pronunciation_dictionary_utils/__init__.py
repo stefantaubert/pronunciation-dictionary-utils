@@ -1,6 +1,7 @@
 from pronunciation_dictionary_utils.common import merge_pronunciations
 from pronunciation_dictionary_utils.merging import merge_dictionaries
 from pronunciation_dictionary_utils.pronunciations_map_symbols import map_symbols
+from pronunciation_dictionary_utils.pronunciations_map_symbols_dict import map_symbols_dict
 from pronunciation_dictionary_utils.pronunciations_remove_symbols import \
   remove_symbols_from_pronunciations
 from pronunciation_dictionary_utils.pronunciations_replace_pronunciation import \

@@ -1,4 +1,4 @@
-from pronunciation_dictionary_utils_cli.pronunciations_map_symbols_json import get_mappable_symbols
+from pronunciation_dictionary_utils.pronunciations_map_symbols_dict import get_mappable_symbols
 
 
 def test_symbols_found():
