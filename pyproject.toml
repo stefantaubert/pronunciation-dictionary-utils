@@ -1,23 +1,12 @@
-[build-system]
-requires = [
-  "setuptools >= 40.9.0",
-  "wheel",
-]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "pronunciation-dictionary-utils"
-version = "0.0.4"
+version = "0.0.5"
 description = "CLI and library to modify pronunciation dictionaries (any language)."
 readme = "README.md"
-requires-python = ">=3.8, <4"
-license = {text = "MIT"}
-authors = [
-  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},
-]
-maintainers = [
-  {name = "Stefan Taubert", email = "pypi@stefantaubert.com"},
-]
+requires-python = ">=3.8, <3.13"
+license = { text = "MIT" }
+authors = [{ name = "Stefan Taubert", email = "pypi@stefantaubert.com" }]
+maintainers = [{ name = "Stefan Taubert", email = "pypi@stefantaubert.com" }]
 keywords = [
   "ARPAbet",
   "IPA",
@@ -27,7 +16,7 @@ keywords = [
   "Text-to-speech",
   "Speech synthesis",
   "Language",
-  "Linguistics"  
+  "Linguistics",
 ]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
@@ -44,10 +33,11 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-  "pronunciation-dictionary >= 0.0.5",
+  "pronunciation-dictionary >= 0.0.6",
   "ordered-set >= 4.1.0",
   "tqdm",
 ]
@@ -63,21 +53,19 @@ dict-cli = "pronunciation_dictionary_utils_cli.cli:run"
 where = ["src"]
 include = [
   "pronunciation_dictionary_utils",
+  "pronunciation_dictionary_utils.*",
   "pronunciation_dictionary_utils_cli",
+  "pronunciation_dictionary_utils_cli.*",
   "pronunciation_dictionary_utils_tests",
-  "pronunciation_dictionary_utils_tests.*"
+  "pronunciation_dictionary_utils_tests.*",
 ]
-exclude = [
-  "pronunciation_dictionary_utils_debug"
-]
+exclude = ["pronunciation_dictionary_utils_debug"]
 namespaces = true
 
 [tool.pytest.ini_options]
 log_cli = true
 log_level = "DEBUG"
-testpaths = [
-  "src/pronunciation_dictionary_utils_tests",
-]
+testpaths = ["src/pronunciation_dictionary_utils_tests"]
 console_output_style = "count"
 
 [tool.autopep8]
@@ -103,7 +91,7 @@ useLibraryCodeForTypes = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{38,39,310,311}
+envlist = py{38,39,310,311,312}
 isolated_build = true
 
 [testenv]
@@ -121,10 +109,10 @@ line_length = 100
 indent = 2
 known_first_party = [
   "pronunciation_dictionary_utils",
-  "pronunciation_dictionary_utils_cli"
+  "pronunciation_dictionary_utils_cli",
 ]
-known_third_party = [
-  "pronunciation-dictionary", 
-  "ordered_set", 
-  "tqdm"
-]
+known_third_party = ["pronunciation-dictionary", "ordered_set", "tqdm"]
+
+[build-system]
+requires = ["setuptools >= 40.9.0", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -15,8 +15,8 @@ authors:
   - given-names: Natalia
     family-names: Przybysz
     affiliation: Chemnitz University of Technology
-version: 0.0.4
-date-released: 2023-06-02
+version: 0.0.5
+date-released: 2024-01-24
 license: MIT
 url: https://github.com/stefantaubert/pronunciation-dictionary-utils
-doi: 10.5281/zenodo.7997799
+doi: 10.5281/zenodo.10560153

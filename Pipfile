@@ -17,7 +17,7 @@ tox = "*"
 build = "*"
 
 [packages]
-pronunciation-dictionary = ">= 0.0.5"
+pronunciation-dictionary = ">= 0.0.6"
 ordered-set = ">= 4.1.0"
 tqdm = "*"
 
