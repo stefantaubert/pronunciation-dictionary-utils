@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for partial mapping in `map-symbols-in-pronunciations-json`
 - Added testing units for `map-symbols-in-pronunciations-json`
 
-### Bugfixes
+### Fixed
 
 - Support for Python 3.11 was not correctly defined
 - Adjusted return value for `map_symbols` in `pronunciations_map_symbols`
