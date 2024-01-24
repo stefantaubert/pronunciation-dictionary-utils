@@ -4,7 +4,6 @@
 [![PyPI](https://img.shields.io/pypi/pyversions/pronunciation-dictionary-utils.svg)](https://pypi.python.org/pypi/pronunciation-dictionary-utils)
 [![MIT](https://img.shields.io/github/license/stefantaubert/pronunciation-dictionary-utils.svg)](LICENSE)
 [![PyPI](https://img.shields.io/github/commits-since/stefantaubert/pronunciation-dictionary/latest/master.svg)](https://github.com/stefantaubert/pronunciation-dictionary/compare/v0.0.5...master)
-
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10560153.svg)](https://doi.org/10.5281/zenodo.10560153)
 
 Library and CLI to modify pronunciation dictionaries (any language).
